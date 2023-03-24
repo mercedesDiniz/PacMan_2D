@@ -1,5 +1,6 @@
 // g++ -o proj01.out proj01_2D.cpp -lglut -lGLU -lGL -lm
 #include <GL/glut.h>
+#include <cmath>
 
 float avatar_x = 0.0;
 float avatar_y = 0.0;
@@ -20,17 +21,30 @@ void display()
     }
     glEnd();
 
-   // Desenha o avatar triangular azul
+   // Desenha o avatar do Pacman
     glPushMatrix();
     glTranslatef(avatar_x, avatar_y, 0.0);
     glRotatef(avatar_angle, 0.0, 0.0, 1.0);
     glScalef(avatar_scale, avatar_scale, 1.0);
-    glColor3f(0.0, 0.0, 1.0);
-    glBegin(GL_TRIANGLES);
-        glVertex2f(0.0, 0.1);
-        glVertex2f(-0.05, -0.05);
-        glVertex2f(0.05, -0.05);
+
+    // Desenha o corpo do Pacman
+    glColor3f(1.0, 1.0, 0.0);
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(0.0, 0.0);
+    for (int i = 0; i <= 360; i += 5) {
+        float rad = i * 3.14159 / 180.0;
+        glVertex2f(cos(rad) * 0.1, sin(rad) * 0.1);
+    }
     glEnd();
+
+    // Desenha a boca do Pacman
+    glColor3f(0.0, 0.0, 0.0);
+    glBegin(GL_TRIANGLES);
+    glVertex2f(0.0, 0.0);
+    glVertex2f(0.1, 0.05);
+    glVertex2f(0.1, -0.05);
+    glEnd();
+
     glPopMatrix();
 
     glFlush();  
