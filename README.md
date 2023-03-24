@@ -36,7 +36,7 @@ mantida pelo Khronos Group.
     ~~~
 
 - Windows:
-    1. Faça o download do [Visual studio](https://www.visualstudio.com/downloads/)  e instale-o em sua maquina com a opção Desktop development with C++ :
+    1. Faça o download do [Visual studio](https://www.visualstudio.com/downloads/)  e instale-o em sua maquina com a opção Desktop development with C++:
     2. Acesse faça o [download](https://edisciplinas.usp.br/mod/resource/view.php?id=2300602) do zip dos arquivos necessários da OpenGL. Após a finalização do download, descompacte o arquivo e mova-o para um local de sua preferência.
     3. Abra o Visual Studio, crie um Empty Project do Visual C++ (Ctrl+Shift+N → Templates →
     Visual C++ → Empty Project) e atribua um nome ao projeto.
