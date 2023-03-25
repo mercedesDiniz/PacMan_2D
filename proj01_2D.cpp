@@ -6,20 +6,12 @@ float avatar_x = 0.0;
 float avatar_y = 0.0;
 float avatar_angle = 0.0;
 float avatar_scale = 1.0;
-
+char ultima_tecla_precionada;
+char tecla_precionada = 'd';
 void display()  
 {  
-    glClear(GL_COLOR_BUFFER_BIT);  
-
-    // Desenha a galáxia genérica
-    glBegin(GL_POINTS);
-    for (int i = 0; i < 10000; i++) {
-        float x = (float) rand() / RAND_MAX * 2 - 1;
-        float y = (float) rand() / RAND_MAX * 2 - 1;
-        glColor3f(1.0, 1.0, 1.0);
-        glVertex2f(x, y);
-    }
-    glEnd();
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);  // Fundo preto
 
    // Desenha o avatar do Pacman
     glPushMatrix();
@@ -54,24 +46,43 @@ void keyboard(unsigned char key, int x, int y)
 {
     switch (key) {
         case 'a':
+            tecla_precionada = 'a';
             avatar_x -= 0.1;
+            if(ultima_tecla_precionada != tecla_precionada){
+                avatar_angle -= 180.0;
+            }
             break;
         case 'w':
+            tecla_precionada = 'w';
             avatar_y += 0.1;
+            if(ultima_tecla_precionada != tecla_precionada){
+                avatar_angle += 90.0;
+            }
             break;
         case 's':
+            tecla_precionada = 's';
             avatar_y -= 0.1;
+            if(ultima_tecla_precionada != 's'){
+                avatar_angle += 90.0;
+            }
             break;
         case 'd':
+            tecla_precionada = 'd';
             avatar_x += 0.1;
+            if(ultima_tecla_precionada != tecla_precionada){
+                avatar_angle += 180.0;
+            }
             break;
         case 'e':
+            tecla_precionada = 'e';
             avatar_scale += 0.1;
             break;
         case 'q':
+            tecla_precionada = 'q';
             avatar_scale -= 0.1;
             break;
     }
+    ultima_tecla_precionada = tecla_precionada;
     glutPostRedisplay();
 }
 
