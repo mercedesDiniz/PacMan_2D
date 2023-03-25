@@ -49,6 +49,7 @@ void keyboard(unsigned char key, int x, int y)
             tecla_precionada = 'a';
             avatar_x -= 0.1;
             if(ultima_tecla_precionada != tecla_precionada){
+                avatar_angle = 0.0;
                 avatar_angle -= 180.0;
             }
             break;
@@ -56,6 +57,7 @@ void keyboard(unsigned char key, int x, int y)
             tecla_precionada = 'w';
             avatar_y += 0.1;
             if(ultima_tecla_precionada != tecla_precionada){
+                avatar_angle = 0.0;
                 avatar_angle += 90.0;
             }
             break;
@@ -63,14 +65,16 @@ void keyboard(unsigned char key, int x, int y)
             tecla_precionada = 's';
             avatar_y -= 0.1;
             if(ultima_tecla_precionada != 's'){
-                avatar_angle += 90.0;
+                avatar_angle = 0.0;
+                avatar_angle -= 90.0;
             }
             break;
         case 'd':
             tecla_precionada = 'd';
             avatar_x += 0.1;
             if(ultima_tecla_precionada != tecla_precionada){
-                avatar_angle += 180.0;
+                avatar_angle = 0.0;
+                avatar_angle += 360.0;
             }
             break;
         case 'e':
