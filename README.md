@@ -1,7 +1,7 @@
 # PacMan - 2D modeling project with OpenGL
  
 ## Goal:
-1. Aprimorar a interface com o usuario e a modelagem e ambientação do [projeto Pacman](https://github.com/mercedesDiniz/Games.c/tree/main/PacMan).
+1. Aprimorar a interface com o usuário e a modelagem / ambientação do [projeto Pacman](https://github.com/mercedesDiniz/Games.c/tree/main/PacMan).
 2. Descreva e Implemente um ambiente em OPENGL através da modelagem geométrica (geometria e topologia) de objetos 2D cujo sofreram as transformações geométricas (translação, rotação e escala, etc).
 
 ## OpenGL
