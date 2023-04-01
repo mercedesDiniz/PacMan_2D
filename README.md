@@ -10,10 +10,10 @@ Application Programming Interface (API) para a criação de
 aplicações gráficas.
 Foi introduzido em 1992 pela Silicon Graphics e atualmente é
 mantida pelo Khronos Group.
-### Documentação: 
+### Documentation: 
 - [Opengl.org](https://www.opengl.org/)
 - [Curso  Computação Gráfica (2018) - USP](https://edisciplinas.usp.br/course/view.php?id=61213#section-5)
-### Instalação:
+### Installation:
 - Linux:
     1. Instale a OpenGL Utility Toolkit (GLUT):
     ~~~bash
