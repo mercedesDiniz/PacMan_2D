@@ -5,7 +5,9 @@
     g++ main.cpp -lglfw -lglut -lGL -lGLU -o pacman.out
     ./pacman.out
 */
-
+// #include <iostream>
+// #include <string>
+// #include <vector>
 #include <GL/glut.h>
 #include <GL/glu.h>
 #include <GLFW/glfw3.h>
@@ -29,8 +31,8 @@ int main(int argc, char** argv){
         return -1;
     }
 
-    pacman.x = 0.0;
-    pacman.y = 0.0;
+    pacman.x = SCREEN_WIDTH/2.0;
+    pacman.y = SCREEN_HEIGHT/2.0;
     pacman.angle = 0.0;
     pacman.scale = 1.0;
 
@@ -95,39 +97,60 @@ void display(){
 }
 
 void keyboard(unsigned char key, int x, int y){
+    POSICAO nova_posicao;
     switch (key) {
         case ESQUERDA:
             tecla_precionada = ESQUERDA;
+            // Verifica se a nova posição do Pac-Man é uma parede
+            nova_posicao = { static_cast<float>(pacman.x - 0.1), static_cast<float>(pacman.y) };
+            if (colisao_parede(nova_posicao)) return;
+
             pacman.x -= 0.1;
             if(ultima_tecla_precionada != tecla_precionada){
                 pacman.angle = 0.0;
                 pacman.angle -= 180.0;
             }
             break;
+
         case CIMA:
             tecla_precionada = CIMA;
+            // Verifica se a nova posição do Pac-Man é uma parede
+            nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y + 0.1) };
+            if (colisao_parede(nova_posicao)) return;
+
             pacman.y += 0.1;
             if(ultima_tecla_precionada != tecla_precionada){
                 pacman.angle = 0.0;
                 pacman.angle += 90.0;
             }
             break;
+
         case BAIXO:
             tecla_precionada = BAIXO;
+            // Verifica se a nova posição do Pac-Man é uma parede
+            nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y - 0.1) };
+            if (colisao_parede(nova_posicao)) return;
+
             pacman.y -= 0.1;
             if(ultima_tecla_precionada != tecla_precionada){
                 pacman.angle = 0.0;
                 pacman.angle -= 90.0;
             }
             break;
+
         case DIREITA:
             tecla_precionada = DIREITA;
+            // Verifica se a nova posição do Pac-Man é uma parede
+            nova_posicao = { static_cast<float>(pacman.x + 0.1), static_cast<float>(pacman.y) };
+            if (colisao_parede(nova_posicao)) return;
+
             pacman.x += 0.1;
             if(ultima_tecla_precionada != tecla_precionada){
                 pacman.angle = 0.0;
                 pacman.angle += 360.0;
             }
             break;
+
         // case 'e':
         //     tecla_precionada = 'e';
         //     pacman.scale += 0.1;
@@ -166,6 +189,7 @@ void desenha_pacman(){
     glVertex2f(0.1, -0.05);
     glEnd();
 }
+
 void desenhaLabirinto() {
     glLineWidth(2.0);
     glColor3f(1.0, 1.0, 1.0);
@@ -199,4 +223,17 @@ void desenhaLabirinto() {
     }
 
     glEnd();
+}
+
+// Função para verificar se o Pac-Man colidiu com uma parede
+bool colisao_parede(POSICAO p) {
+    // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
+    int x = (int) (p.x / TILE_SIZE);
+    int y = (int) (p.y / TILE_SIZE);
+
+    // Verificar se as coordenadas correspondem a uma parede
+    if (maze[y][x] == 1) {
+        return true;
+    }
+    return false;
 }
