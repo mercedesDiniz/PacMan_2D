@@ -1,6 +1,8 @@
 #ifndef _PACMAN_H_
 #define _PACMAN_H_
 
+#include <GL/gl.h>
+
 struct posicao{
 	float x;
 	float y;
@@ -37,9 +39,10 @@ int maze[MAZE_HEIGHT][MAZE_WIDTH] = {
     {1,1,1,1,1,1,1,1,1,1},
 };
 
-void display();
+// void display();
 void desenha_pacman();
 void desenhaLabirinto();
-void keyboard(unsigned char key, int x, int y);
+// void keyboard(unsigned char key, int x, int y);
+void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
 bool colisao_parede(POSICAO p);
 #endif

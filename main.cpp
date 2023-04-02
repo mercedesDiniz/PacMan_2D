@@ -5,18 +5,16 @@
     g++ main.cpp -lglfw -lglut -lGL -lGLU -o pacman.out
     ./pacman.out
 */
-// #include <iostream>
-// #include <string>
-// #include <vector>
+
+// #include <cstdlib>
+// #include <GL/glu.h>
+#include <stdio.h>
 #include <GL/glut.h>
-#include <GL/glu.h>
 #include <GLFW/glfw3.h>
 #include <math.h>
 #include "pacman.h"
 
-
 // Declarando Variaveis Globais
-// MAPA mp;
 POSICAO pacman; // posição atual do pacman
 int havePowerPill = 0; // qtd de pilulas de poder
 char ultima_tecla_precionada;
@@ -30,6 +28,8 @@ int main(int argc, char** argv){
     if (!glfwInit()) {
         return -1;
     }
+    glutInitDisplayMode(GLUT_DOUBLE);
+    glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
     pacman.x = SCREEN_WIDTH/2.0;
     pacman.y = SCREEN_HEIGHT/2.0;
@@ -37,7 +37,7 @@ int main(int argc, char** argv){
     pacman.scale = 1.0;
 
     // Create a windowed mode window and its OpenGL context
-    window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Maze Game", NULL, NULL);
+    window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "PacMan", NULL, NULL);
     if (!window) {
         glfwTerminate();
         return -1;
@@ -55,14 +55,11 @@ int main(int argc, char** argv){
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    glfwSetKeyCallback(window, keyboard);
 
-    // glutInit(&argc, argv);  
-    // glutCreateWindow("PacMan");  
-    // glutDisplayFunc(display);
-    glutKeyboardFunc(keyboard);
-    // glutMainLoop();
     // Main loop
     while (!glfwWindowShouldClose(window)) {
+        printf("Main loop\n");
         // Clear the screen
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -72,6 +69,7 @@ int main(int argc, char** argv){
         desenhaLabirinto();
         desenha_pacman();
         glPopMatrix();
+        
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
@@ -81,22 +79,14 @@ int main(int argc, char** argv){
     // Terminate GLFW
     glfwTerminate();
     return 0; 
-
-    // return 0;  
 }
 
-// FUCTIONS BASIC
-void display(){  
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);  // Fundo preto
-    glPushMatrix();
-    desenhaLabirinto();
-    desenha_pacman();
-    glPopMatrix();
-    glFlush();  
-}
+// FUCTIONS:
 
-void keyboard(unsigned char key, int x, int y){
+// void keyboard(unsigned char key, int x, int y){
+void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) glfwSetWindowShouldClose(window, GLFW_TRUE);
+
     POSICAO nova_posicao;
     switch (key) {
         case ESQUERDA:
@@ -161,18 +151,21 @@ void keyboard(unsigned char key, int x, int y){
         //     break;
     }
     ultima_tecla_precionada = tecla_precionada;
-    glutPostRedisplay();
+
+    // atualiza a tela
+    glfwSwapBuffers(window);
 }
 
-// FUCTIONS 
+
 void desenha_pacman(){
+    printf("desenha_pacma()\n");
     // Desenha o avatar do Pacman
     glTranslatef(pacman.x, pacman.y, 0.0);
     glRotatef(pacman.angle, 0.0, 0.0, 1.0);
     glScalef(pacman.scale, pacman.scale, 1.0);
 
     // Desenha o corpo do Pacman
-    glColor3f(1.0, 1.0, 0.0);
+    glColor3f(1.0, 1.0, 0.0); // amarelo
     glBegin(GL_TRIANGLE_FAN);
     glVertex2f(0.0, 0.0);
     for (int i = 0; i <= 360; i += 5) {
@@ -182,7 +175,7 @@ void desenha_pacman(){
     glEnd();
 
     // Desenha a boca do Pacman
-    glColor3f(0.0, 0.0, 0.0);
+    glColor3f(0.0, 0.0, 0.0); // preto
     glBegin(GL_TRIANGLES);
     glVertex2f(0.0, 0.0);
     glVertex2f(0.1, 0.05);
@@ -191,6 +184,7 @@ void desenha_pacman(){
 }
 
 void desenhaLabirinto() {
+    printf("desenhaLabirinto()\n");
     glLineWidth(2.0);
     glColor3f(1.0, 1.0, 1.0);
     glBegin(GL_LINES);
@@ -233,6 +227,7 @@ bool colisao_parede(POSICAO p) {
 
     // Verificar se as coordenadas correspondem a uma parede
     if (maze[y][x] == 1) {
+        printf("colisao_parede() = TRUE\n");
         return true;
     }
     return false;
