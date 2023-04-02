@@ -31,10 +31,10 @@ int main(int argc, char** argv){
     glutInitDisplayMode(GLUT_DOUBLE);
     glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    pacman.x = SCREEN_WIDTH/2.0;
-    pacman.y = SCREEN_HEIGHT/2.0;
+    pacman.x = SCREEN_WIDTH/8.5; // coordenada da horizontal
+    pacman.y = SCREEN_HEIGHT/13; // coordenada da vertical
     pacman.angle = 0.0;
-    pacman.scale = 1.0;
+    pacman.scale = 1.1;
 
     // Create a windowed mode window and its OpenGL context
     window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "PacMan", NULL, NULL);
@@ -59,7 +59,7 @@ int main(int argc, char** argv){
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
-        printf("Main loop\n");
+        printf("[LOG] Main loop\n");
         // Clear the screen
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -85,15 +85,18 @@ int main(int argc, char** argv){
 
 // void keyboard(unsigned char key, int x, int y){
 void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
+    printf("[LOG] keyboard()\n");
+
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) glfwSetWindowShouldClose(window, GLFW_TRUE);
 
     POSICAO nova_posicao;
     switch (key) {
         case ESQUERDA:
             tecla_precionada = ESQUERDA;
+            printf("[LOG] pacman vai p/ %c\n", tecla_precionada);
             // Verifica se a nova posição do Pac-Man é uma parede
-            nova_posicao = { static_cast<float>(pacman.x - 0.1), static_cast<float>(pacman.y) };
-            if (colisao_parede(nova_posicao)) return;
+            // nova_posicao = { static_cast<float>(pacman.x - 0.1), static_cast<float>(pacman.y) };
+            // if (colisao_parede(nova_posicao)) return;
 
             pacman.x -= 0.1;
             if(ultima_tecla_precionada != tecla_precionada){
@@ -104,9 +107,11 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
 
         case CIMA:
             tecla_precionada = CIMA;
+            printf("[LOG] pacman vai p/ %c\n", tecla_precionada);
+
             // Verifica se a nova posição do Pac-Man é uma parede
-            nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y + 0.1) };
-            if (colisao_parede(nova_posicao)) return;
+            // nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y + 0.1) };
+            // if (colisao_parede(nova_posicao)) return;
 
             pacman.y += 0.1;
             if(ultima_tecla_precionada != tecla_precionada){
@@ -117,9 +122,11 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
 
         case BAIXO:
             tecla_precionada = BAIXO;
+            printf("[LOG] pacman vai p/ %c\n", tecla_precionada);
+
             // Verifica se a nova posição do Pac-Man é uma parede
-            nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y - 0.1) };
-            if (colisao_parede(nova_posicao)) return;
+            // nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y - 0.1) };
+            // if (colisao_parede(nova_posicao)) return;
 
             pacman.y -= 0.1;
             if(ultima_tecla_precionada != tecla_precionada){
@@ -130,9 +137,11 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
 
         case DIREITA:
             tecla_precionada = DIREITA;
+            printf("[LOG] pacman vai p/ %c\n", tecla_precionada);
+
             // Verifica se a nova posição do Pac-Man é uma parede
-            nova_posicao = { static_cast<float>(pacman.x + 0.1), static_cast<float>(pacman.y) };
-            if (colisao_parede(nova_posicao)) return;
+            // nova_posicao = { static_cast<float>(pacman.x + 0.1), static_cast<float>(pacman.y) };
+            // if (colisao_parede(nova_posicao)) return;
 
             pacman.x += 0.1;
             if(ultima_tecla_precionada != tecla_precionada){
@@ -158,33 +167,35 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
 
 
 void desenha_pacman(){
-    printf("desenha_pacma()\n");
+    printf("[LOG] desenha_pacman()\n");
     // Desenha o avatar do Pacman
     glTranslatef(pacman.x, pacman.y, 0.0);
     glRotatef(pacman.angle, 0.0, 0.0, 1.0);
     glScalef(pacman.scale, pacman.scale, 1.0);
 
     // Desenha o corpo do Pacman
-    glColor3f(1.0, 1.0, 0.0); // amarelo
+    glColor3f(1.0, 1.0, 0.0);
     glBegin(GL_TRIANGLE_FAN);
-    glVertex2f(0.0, 0.0);
-    for (int i = 0; i <= 360; i += 5) {
-        float rad = i * 3.14159 / 180.0;
-        glVertex2f(cos(rad) * 0.1, sin(rad) * 0.1);
+    glVertex2f(pacman.x, pacman.y);
+    for (int i = 0; i <= 360; i++) {
+        float x = pacman.x + pacman.scale * TILE_SIZE * cos(i * M_PI / 180.0);
+        float y = pacman.y + pacman.scale * TILE_SIZE * sin(i * M_PI / 180.0);
+        glVertex2f(x, y);
     }
     glEnd();
 
     // Desenha a boca do Pacman
-    glColor3f(0.0, 0.0, 0.0); // preto
+    glColor3f(0.0, 0.0, 0.0);
     glBegin(GL_TRIANGLES);
-    glVertex2f(0.0, 0.0);
-    glVertex2f(0.1, 0.05);
-    glVertex2f(0.1, -0.05);
+    glVertex2f(pacman.x, pacman.y);
+    glVertex2f(pacman.x+3 + pacman.scale * TILE_SIZE * cos(pacman.angle + M_PI / 6.0), pacman.y + pacman.scale * TILE_SIZE * sin(pacman.angle + M_PI / 6.0));
+    glVertex2f(pacman.x+3 + pacman.scale * TILE_SIZE * cos(pacman.angle - M_PI / 6.0), pacman.y + pacman.scale * TILE_SIZE * sin(pacman.angle - M_PI / 6.0));
     glEnd();
+
 }
 
 void desenhaLabirinto() {
-    printf("desenhaLabirinto()\n");
+    printf("[LOG] desenhaLabirinto()\n");
     glLineWidth(2.0);
     glColor3f(1.0, 1.0, 1.0);
     glBegin(GL_LINES);
@@ -227,7 +238,7 @@ bool colisao_parede(POSICAO p) {
 
     // Verificar se as coordenadas correspondem a uma parede
     if (maze[y][x] == 1) {
-        printf("colisao_parede() = TRUE\n");
+        printf("[LOG] colisao_parede() = TRUE\n");
         return true;
     }
     return false;
