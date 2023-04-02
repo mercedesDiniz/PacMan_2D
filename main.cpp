@@ -1,11 +1,14 @@
-// g++ -o proj01.out proj01_2D.cpp -lglut -lGLU -lGL -lm
 /*  gcc -c mapa.c -o mapa.o
     gcc -c ui.c -o ui.o
     g++ main.cpp mapa.o ui.o -lglut -lGL -lGLU -o pacman.out
+    g++ main.cpp -lglut -lGL -lGLU -o pacman.out
+    g++ main.cpp -lglfw -lglut -lGL -lGLU -o pacman.out
     ./pacman.out
 */
 
 #include <GL/glut.h>
+#include <GL/glu.h>
+#include <GLFW/glfw3.h>
 #include <math.h>
 #include "pacman.h"
 
@@ -18,38 +21,80 @@ char ultima_tecla_precionada;
 char tecla_precionada = 'd';
 
 // MAIN
-int main(int argc, char** argv)  
-{  
+int main(int argc, char** argv){
+    glutInit(&argc, argv); // Inicializa a biblioteca FreeGLUT
+    GLFWwindow* window;
+    // Initialize GLFW
+    if (!glfwInit()) {
+        return -1;
+    }
+
     pacman.x = 0.0;
     pacman.y = 0.0;
     pacman.angle = 0.0;
     pacman.scale = 1.0;
 
-    glutInit(&argc, argv);  
-    glutCreateWindow("PacMan");  
-    glutDisplayFunc(display);
-    glutKeyboardFunc(keyboard);
-    glutMainLoop();  
+    // Create a windowed mode window and its OpenGL context
+    window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Maze Game", NULL, NULL);
+    if (!window) {
+        glfwTerminate();
+        return -1;
+    }
 
-    return 0;  
+    // Make the window's context current
+    glfwMakeContextCurrent(window);
+
+    // Set the projection matrix
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT);
+
+    // Set the modelview matrix
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+
+    // glutInit(&argc, argv);  
+    // glutCreateWindow("PacMan");  
+    // glutDisplayFunc(display);
+    glutKeyboardFunc(keyboard);
+    // glutMainLoop();
+    // Main loop
+    while (!glfwWindowShouldClose(window)) {
+        // Clear the screen
+        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Draw the maze and Pacman
+        glPushMatrix();
+        desenhaLabirinto();
+        desenha_pacman();
+        glPopMatrix();
+
+        // Swap buffers and poll events
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    // Terminate GLFW
+    glfwTerminate();
+    return 0; 
+
+    // return 0;  
 }
 
 // FUCTIONS BASIC
-void display()  
-{  
+void display(){  
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);  // Fundo preto
     glPushMatrix();
-
+    desenhaLabirinto();
     desenha_pacman();
-
     glPopMatrix();
     glFlush();  
-}  
+}
 
-
-void keyboard(unsigned char key, int x, int y)
-{
+void keyboard(unsigned char key, int x, int y){
     switch (key) {
         case ESQUERDA:
             tecla_precionada = ESQUERDA;
@@ -121,61 +166,37 @@ void desenha_pacman(){
     glVertex2f(0.1, -0.05);
     glEnd();
 }
+void desenhaLabirinto() {
+    glLineWidth(2.0);
+    glColor3f(1.0, 1.0, 1.0);
+    glBegin(GL_LINES);
 
-// void imprime_mapa(MAPA* mp, POSICAO pacman){
-// 	// Exibindo o mapa
-// 	for(int i = 0; i<mp->linhas; i++){
-//         for(int j=0; j < mp->colunas; j++){
-//             float x = j * TAMANHO_CELULA;
-//             float y = (ALTURA - i - 1) * TAMANHO_CELULA;
-//             switch(mp->matriz[i][j]){
-//                 case VAZIO:
-//                 // Desenha um quadrado vazio
-//                 glColor3f(1.0, 1.0, 1.0);
-//                 glBegin(GL_LINE_LOOP);
-//                 glVertex2f(x, y);
-//                 glVertex2f(x + TAMANHO_CELULA, y);
-//                 glVertex2f(x + TAMANHO_CELULA, y + TAMANHO_CELULA);
-//                 glVertex2f(x, y + TAMANHO_CELULA);
-//                 glEnd();
-//                 break;
+    for (int i = 0; i < MAZE_HEIGHT; i++) {
+        for (int j = 0; j < MAZE_WIDTH; j++) {
+            int x = j * (SCREEN_WIDTH / MAZE_WIDTH);
+            int y = (MAZE_HEIGHT - i - 1) * (SCREEN_HEIGHT / MAZE_HEIGHT);
+            int cellWidth = SCREEN_WIDTH / MAZE_WIDTH;
+            int cellHeight = SCREEN_HEIGHT / MAZE_HEIGHT;
 
-//                 case PAREDE_HORIZONTAL:
-//                     // Desenha uma linha horizontal
-//                     glColor3f(1.0, 1.0, 1.0);
-//                     glBegin(GL_LINES);
-//                     glVertex2f(x, y + TAMANHO_CELULA / 2);
-//                     glVertex2f(x + TAMANHO_CELULA, y + TAMANHO_CELULA / 2);
-//                     glEnd();
-//                     break;
+            if (maze[i][j] == 1) {
+                // draw top line
+                glVertex2f(x, y + cellHeight);
+                glVertex2f(x + cellWidth, y + cellHeight);
 
-//                 case PAREDE_VERTICAL:
-//                     // Desenha uma linha vertical
-//                     glColor3f(1.0, 1.0, 1.0);
-//                     glBegin(GL_LINES);
-//                     glVertex2f(x + TAMANHO_CELULA / 2, y);
-//                     glVertex2f(x + TAMANHO_CELULA / 2, y + TAMANHO_CELULA);
-//                     glEnd();
-//                     break;
+                // draw left line
+                glVertex2f(x, y);
+                glVertex2f(x, y + cellHeight);
 
-//                 case PACMAN:
-//                     // Desenha o avatar do Pacman
-//                     glPushMatrix();
-//                     glTranslatef(x + TAMANHO_CELULA / 2, y + TAMANHO_CELULA / 2, 0.0);
-//                     glRotatef(pacman.angle, 0.0, 0.0, 1.0);
-//                     glScalef(pacman.scale, pacman.scale, 1.0);
+                // draw bottom line
+                glVertex2f(x, y);
+                glVertex2f(x + cellWidth, y);
 
-//                     // Desenha o corpo do Pacman
-//                     glColor3f(1.0, 1.0, 0.0);
-//                     glBegin(GL_TRIANGLE_FAN);
-//                     glVertex2f(0.0, 0.0);
-//                     for (int k = 0; k <= 360; k += 5) {
-//                         float rad = k * 3.14159 / 180.0;
-//                         glVertex2f(cos(rad) * TAMANHO_CELULA / 2, sin(rad) * TAMANHO_CELULA / 2);
-//                     }
-//                     glEnd();
-//                     break;
-//             }
-//         }       
-// 	}
-// }
+                // draw right line
+                glVertex2f(x + cellWidth, y);
+                glVertex2f(x + cellWidth, y + cellHeight);
+            }
+        }
+    }
+
+    glEnd();
+}
