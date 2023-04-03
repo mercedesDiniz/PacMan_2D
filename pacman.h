@@ -11,11 +11,14 @@ struct posicao{
 };
 typedef struct posicao POSICAO;
 
-#define CIMA 'w'
-#define BAIXO 's'
-#define DIREITA 'd'
-#define ESQUERDA 'a'
-#define BOMBA 'b'
+#define CIMA GLFW_KEY_W          // 'w'
+#define BAIXO GLFW_KEY_S         // 's'
+#define DIREITA GLFW_KEY_D       // 'd'
+#define ESQUERDA GLFW_KEY_A      // 'a'
+#define BOMBA GLFW_KEY_BACKSPACE // 'b'
+
+#define PASSO 0.5
+
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;

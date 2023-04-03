@@ -20,6 +20,7 @@ int havePowerPill = 0; // qtd de pilulas de poder
 char ultima_tecla_precionada;
 char tecla_precionada = 'd';
 
+
 // MAIN
 int main(int argc, char** argv){
     glutInit(&argc, argv); // Inicializa a biblioteca FreeGLUT
@@ -69,11 +70,12 @@ int main(int argc, char** argv){
         desenhaLabirinto();
         desenha_pacman();
         glPopMatrix();
-        
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+
     }
 
     // Terminate GLFW
@@ -95,13 +97,28 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
             tecla_precionada = ESQUERDA;
             printf("[LOG] pacman vai p/ %c\n", tecla_precionada);
             // Verifica se a nova posição do Pac-Man é uma parede
-            // nova_posicao = { static_cast<float>(pacman.x - 0.1), static_cast<float>(pacman.y) };
+            // nova_posicao = { static_cast<float>(pacman.x - PASSO), static_cast<float>(pacman.y) };
             // if (colisao_parede(nova_posicao)) return;
 
-            pacman.x -= 0.1;
+            pacman.x -= PASSO;
             if(ultima_tecla_precionada != tecla_precionada){
                 pacman.angle = 0.0;
                 pacman.angle -= 180.0;
+            }
+            break;
+
+        case DIREITA:
+            tecla_precionada = DIREITA;
+            printf("[LOG] pacman vai p/ %c\n", tecla_precionada);
+
+            // Verifica se a nova posição do Pac-Man é uma parede
+            // nova_posicao = { static_cast<float>(pacman.x + PASSO), static_cast<float>(pacman.y) };
+            // if (colisao_parede(nova_posicao)) return;
+
+            pacman.x += PASSO;
+            if(ultima_tecla_precionada != tecla_precionada){
+                pacman.angle = 0.0;
+                pacman.angle += 360.0;
             }
             break;
 
@@ -110,10 +127,10 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
             printf("[LOG] pacman vai p/ %c\n", tecla_precionada);
 
             // Verifica se a nova posição do Pac-Man é uma parede
-            // nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y + 0.1) };
+            // nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y + PASSO) };
             // if (colisao_parede(nova_posicao)) return;
 
-            pacman.y += 0.1;
+            pacman.y += PASSO;
             if(ultima_tecla_precionada != tecla_precionada){
                 pacman.angle = 0.0;
                 pacman.angle += 90.0;
@@ -125,38 +142,24 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
             printf("[LOG] pacman vai p/ %c\n", tecla_precionada);
 
             // Verifica se a nova posição do Pac-Man é uma parede
-            // nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y - 0.1) };
+            // nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y - PASSO) };
             // if (colisao_parede(nova_posicao)) return;
 
-            pacman.y -= 0.1;
+            pacman.y -= PASSO;
             if(ultima_tecla_precionada != tecla_precionada){
                 pacman.angle = 0.0;
                 pacman.angle -= 90.0;
             }
             break;
 
-        case DIREITA:
-            tecla_precionada = DIREITA;
-            printf("[LOG] pacman vai p/ %c\n", tecla_precionada);
-
-            // Verifica se a nova posição do Pac-Man é uma parede
-            // nova_posicao = { static_cast<float>(pacman.x + 0.1), static_cast<float>(pacman.y) };
-            // if (colisao_parede(nova_posicao)) return;
-
-            pacman.x += 0.1;
-            if(ultima_tecla_precionada != tecla_precionada){
-                pacman.angle = 0.0;
-                pacman.angle += 360.0;
-            }
-            break;
 
         // case 'e':
         //     tecla_precionada = 'e';
-        //     pacman.scale += 0.1;
+        //     pacman.scale += PASSO;
         //     break;
         // case 'q':
         //     tecla_precionada = 'q';
-        //     pacman.scale -= 0.1;
+        //     pacman.scale -= PASSO;
         //     break;
     }
     ultima_tecla_precionada = tecla_precionada;
