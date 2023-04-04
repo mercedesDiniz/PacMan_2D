@@ -174,7 +174,10 @@ void desenha_pacman(){
     printf("[LOG] desenha_pacman()\n");
     // Desenha o avatar do Pacman
     glTranslatef(pacman.x, pacman.y, 0.0);
-    //glRotatef(pacman.angle, 0.0, 0.0, 1.0);
+    glPushMatrix();
+    glRotatef(pacman.angle, 0.0, 0.0, 1.0);
+    glPopMatrix();
+    glFlush();
     glScalef(pacman.scale, pacman.scale, 1.0);
 
     // Desenha o corpo do Pacman
