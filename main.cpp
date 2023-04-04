@@ -71,7 +71,6 @@ int main(int argc, char** argv){
         desenhaLabirinto();
         desenha_pacman();
         glPopMatrix();
-
         // Swap buffers and poll events
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -192,13 +191,23 @@ void desenha_pacman(){
     glEnd();
 
     // Desenha a boca do Pacman
-    glColor3f(0.0, 0.0, 0.0);
+    /*glColor3f(0.0, 0.0, 0.0);
     glBegin(GL_TRIANGLES);
     glVertex2f(pacman.x, pacman.y);
     glVertex2f(pacman.x+3 + pacman.scale * TILE_SIZE * cos(pacman.angle + M_PI / 6.0), pacman.y + pacman.scale * TILE_SIZE * sin(pacman.angle + M_PI / 6.0));
     glVertex2f(pacman.x+3 + pacman.scale * TILE_SIZE * cos(pacman.angle - M_PI / 6.0), pacman.y + pacman.scale * TILE_SIZE * sin(pacman.angle - M_PI / 6.0));
     glEnd();
-
+    */
+    glPushMatrix();
+    glTranslatef(pacman.x, pacman.y, 0.0);
+    glRotatef(pacman.angle, 0.0, 0.0, 1.0);
+    glColor3f(0.0, 0.0, 0.0); // Preto
+    glBegin(GL_TRIANGLES);
+    glVertex2f(0.0, 0.0);
+    glVertex2f(20.0, 10.0);
+    glVertex2f(20.0, -10.0);
+    glEnd();
+    glPopMatrix();
 }
 
 void desenhaLabirinto() {
