@@ -8,6 +8,7 @@
 
 // #include <cstdlib>
 // #include <GL/glu.h>
+//#define _USE_MATH_DEFINES           # Para rodar no Visual Studio descomente essa linha
 #include <stdio.h>
 #include <GL/glut.h>
 #include <GLFW/glfw3.h>
@@ -173,7 +174,7 @@ void desenha_pacman(){
     printf("[LOG] desenha_pacman()\n");
     // Desenha o avatar do Pacman
     glTranslatef(pacman.x, pacman.y, 0.0);
-    glRotatef(pacman.angle, 0.0, 0.0, 1.0);
+    //glRotatef(pacman.angle, 0.0, 0.0, 1.0);
     glScalef(pacman.scale, pacman.scale, 1.0);
 
     // Desenha o corpo do Pacman
