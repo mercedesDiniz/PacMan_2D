@@ -17,11 +17,11 @@ typedef struct posicao POSICAO;
 #define ESQUERDA GLFW_KEY_A      // 'a'
 #define BOMBA GLFW_KEY_BACKSPACE // 'b'
 
-#define PASSO 0.5
+#define PASSO 1.5
 
 
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
+const int SCREEN_WIDTH = 800;  // 1800;
+const int SCREEN_HEIGHT = 600; // 1000;
 
 const int MAZE_WIDTH = 10;
 const int MAZE_HEIGHT = 10;
