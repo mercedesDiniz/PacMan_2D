@@ -8,7 +8,7 @@
 
 // #include <cstdlib>
 // #include <GL/glu.h>
-#define _USE_MATH_DEFINES           # Para rodar no Visual Studio descomente essa linha
+//#define _USE_MATH_DEFINES           # Para rodar no Visual Studio descomente essa linha
 #include <stdio.h>
 #include <GL/glut.h>
 #include <GLFW/glfw3.h>
@@ -103,7 +103,7 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
             tecla_precionada = ESQUERDA;
 
             // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-            nova_posicao = { static_cast<float>(pacman.x - PASSO), static_cast<float>(pacman.y)};
+            nova_posicao = { static_cast<float>(pacman.x - PASSO-9), static_cast<float>(pacman.y)};
             if (!eh_parede(nova_posicao)){
                 pacman.x -= PASSO;
                 if(ultima_tecla_precionada != tecla_precionada){
@@ -117,7 +117,7 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
             tecla_precionada = DIREITA;
 
             // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-            nova_posicao = { static_cast<float>(pacman.x + PASSO), static_cast<float>(pacman.y) };
+            nova_posicao = { static_cast<float>(pacman.x + PASSO+9), static_cast<float>(pacman.y) };
             if (!eh_parede(nova_posicao)){
                 pacman.x += PASSO;
                 if(ultima_tecla_precionada != tecla_precionada){
@@ -131,7 +131,7 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
             tecla_precionada = CIMA;
 
             // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-            nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y + PASSO) };
+            nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y + PASSO+9) };
             if (!eh_parede(nova_posicao)){
                 pacman.y += PASSO;
                 if(ultima_tecla_precionada != tecla_precionada){
@@ -146,7 +146,7 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
             tecla_precionada = BAIXO;
 
             // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-            nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y - PASSO) };
+            nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y - PASSO-9) };
             if (!eh_parede(nova_posicao)){
                 pacman.y -= PASSO;
                 if(ultima_tecla_precionada != tecla_precionada){
@@ -218,8 +218,8 @@ void desenhaLabirinto() {
         for (int j = 0; j < MAZE_WIDTH; j++) {
             int x = j * (SCREEN_WIDTH / MAZE_WIDTH);
             int y = (MAZE_HEIGHT - i - 1) * (SCREEN_HEIGHT / MAZE_HEIGHT);
-            int cellWidth = (SCREEN_WIDTH / MAZE_WIDTH)/2;
-            int cellHeight = (SCREEN_HEIGHT / MAZE_HEIGHT)/2;
+            int cellWidth = SCREEN_WIDTH / MAZE_WIDTH;
+            int cellHeight = SCREEN_HEIGHT / MAZE_HEIGHT;
 
             if (maze[i][j] == 1) {
                 // draw top line
@@ -247,14 +247,12 @@ void desenhaLabirinto() {
 // Função para verificar se o Pac-Man colidiu com uma parede
 bool eh_parede(POSICAO p){
     // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
-    glPushMatrix();
     int x = (int) (p.x / TILE_SIZE);
     int y = (int) (p.y / TILE_SIZE);
     y = 19 - y;
     printf("x: %d\n",x);
     printf("y: %d\n" ,y);
     printf("\n");
-    glPopMatrix();
 
     // Verificar se as coordenadas correspondem a uma parede
     if (maze[y][x] == PAREDE) {
