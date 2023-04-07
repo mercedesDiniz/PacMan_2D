@@ -17,9 +17,12 @@
 
 // Declarando Variaveis Globais
 POSICAO pacman; // posição atual do pacman
+POSICAO fantasme01; // posição atual do pacman
+POSICAO fantasme02; // posição atual do pacman
+
 int havePowerPill = 0; // qtd de pilulas de poder
 char ultima_tecla_precionada;
-char tecla_precionada = 'd';
+char tecla_precionada = DIREITA;
 
 
 // MAIN
@@ -96,57 +99,59 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
         case ESQUERDA:
             tecla_precionada = ESQUERDA;
 
-            // Verifica se a nova posição do Pac-Man é uma parede
-            nova_posicao = { static_cast<float>(pacman.x - PASSO), static_cast<float>(pacman.y) };
-            // if (colisao_parede(nova_posicao)) return;
-
-            pacman.x -= PASSO;
-            if(ultima_tecla_precionada != tecla_precionada){
-                pacman.angle = 0.0;
-                pacman.angle -= 180.0;
+            // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
+            nova_posicao = { static_cast<float>(pacman.x - PASSO), static_cast<float>(pacman.y)};
+            if (!eh_parede(nova_posicao, -1)){
+                pacman.x -= PASSO;
+                if(ultima_tecla_precionada != tecla_precionada){
+                    pacman.angle = 0.0;
+                    pacman.angle -= 180.0;
+                }
             }
             break;
 
         case DIREITA:
             tecla_precionada = DIREITA;
 
-            // Verifica se a nova posição do Pac-Man é uma parede
+            // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
             nova_posicao = { static_cast<float>(pacman.x + PASSO), static_cast<float>(pacman.y) };
-            // if (colisao_parede(nova_posicao)) return;
-
-            pacman.x += PASSO;
-            if(ultima_tecla_precionada != tecla_precionada){
-                pacman.angle = 0.0;
-                pacman.angle += 360.0;
+            if (!eh_parede(nova_posicao, 1)){
+                pacman.x += PASSO;
+                if(ultima_tecla_precionada != tecla_precionada){
+                    pacman.angle = 0.0;
+                    pacman.angle += 360.0;
+                }
             }
             break;
 
         case CIMA:
             tecla_precionada = CIMA;
 
-            // Verifica se a nova posição do Pac-Man é uma parede
+            // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
             nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y + PASSO) };
-            // if (colisao_parede(nova_posicao)) return;
-
-            pacman.y += PASSO;
-            if(ultima_tecla_precionada != tecla_precionada){
-                pacman.angle = 0.0;
-                pacman.angle += 90.0;
+            if (!eh_parede(nova_posicao, 1)){
+                pacman.y += PASSO;
+                if(ultima_tecla_precionada != tecla_precionada){
+                    pacman.angle = 0.0;
+                    pacman.angle += 90.0;
+                }
             }
+
             break;
 
         case BAIXO:
             tecla_precionada = BAIXO;
 
-            // Verifica se a nova posição do Pac-Man é uma parede
+            // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
             nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y - PASSO) };
-            // if (colisao_parede(nova_posicao)) return;
-
-            pacman.y -= PASSO;
-            if(ultima_tecla_precionada != tecla_precionada){
-                pacman.angle = 0.0;
-                pacman.angle -= 90.0;
+            if (!eh_parede(nova_posicao, -1)){
+                pacman.y -= PASSO;
+                if(ultima_tecla_precionada != tecla_precionada){
+                    pacman.angle = 0.0;
+                    pacman.angle -= 90.0;
+                }
             }
+
             break;
 
 
@@ -187,14 +192,6 @@ void desenha_pacman(){
     }
     glEnd();
 
-    // Desenha a boca do Pacman
-    /*glColor3f(0.0, 0.0, 0.0);
-    glBegin(GL_TRIANGLES);
-    glVertex2f(pacman.x, pacman.y);
-    glVertex2f(pacman.x+3 + pacman.scale * TILE_SIZE * cos(pacman.angle + M_PI / 6.0), pacman.y + pacman.scale * TILE_SIZE * sin(pacman.angle + M_PI / 6.0));
-    glVertex2f(pacman.x+3 + pacman.scale * TILE_SIZE * cos(pacman.angle - M_PI / 6.0), pacman.y + pacman.scale * TILE_SIZE * sin(pacman.angle - M_PI / 6.0));
-    glEnd();
-    */
     glPushMatrix();
     glTranslatef(pacman.x, pacman.y, 0.0);
     glRotatef(pacman.angle, 0.0, 0.0, 1.0);
@@ -244,15 +241,59 @@ void desenhaLabirinto() {
 }
 
 // Função para verificar se o Pac-Man colidiu com uma parede
-bool colisao_parede(POSICAO p) {
+bool pode_andar(POSICAO p) {
+    // Verificar se as coordenadas correspondem a uma parede
+    // if (!eh_parede(p)) return true;
+    return false;
+}
+
+bool eh_parede(POSICAO p, int borda){
+    // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
+    int x = (int) ((p.x / TILE_SIZE) + borda);
+    int y = (int) ((p.y / TILE_SIZE) + borda);
+
+    // Verificar se as coordenadas correspondem a uma parede
+    if(maze[y][x] == PAREDE) return true;
+    return false;
+}
+
+bool eh_FoodPill(POSICAO p){
     // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
     int x = (int) (p.x / TILE_SIZE);
     int y = (int) (p.y / TILE_SIZE);
 
-    // Verificar se as coordenadas correspondem a uma parede
-    if (maze[y][x] == 1) {
-        printf("[LOG] colisao_parede() = TRUE\n");
+    // Verificar se as coordenadas correspondem a uma comida
+    if(maze[y][x] == FOOD_PILL) {
+        havePowerPill += 1;
         return true;
     }
     return false;
 }
+
+bool eh_PowerPill(POSICAO p){
+    // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
+    int x = (int) (p.x / TILE_SIZE);
+    int y = (int) (p.y / TILE_SIZE);
+
+    // Verificar se as coordenadas correspondem a uma pirula de poder
+    if(maze[y][x] == POWER_PILL) {
+        havePowerPill += 1;
+        return true;
+    }
+    return false;
+}
+
+bool eh_fantasma(POSICAO p, POSICAO f){
+    // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
+    int px = (int) (p.x / TILE_SIZE);
+    int py = (int) (p.y / TILE_SIZE);
+
+    // Converter as coordenadas do Fantasma para as coordenadas do labirinto
+    int fx = (int) (f.x / TILE_SIZE);
+    int fy = (int) (f.y / TILE_SIZE);
+
+    // Verificar se as coordenadas correspondem a uma pirula de poder
+    if(px == fx && py == fy) return true;
+    return false;
+}
+
