@@ -74,7 +74,8 @@ int main(int argc, char** argv){
         glPushMatrix();
         desenhaLabirinto();
         desenhaFoodPill();
-        desenha_pacman();
+        desenhaPowerPill();
+        desenhaPacman();
         glPopMatrix();
         // Swap buffers and poll events
         glfwSwapBuffers(window);
@@ -110,6 +111,8 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
             }
         }
         eh_FoodPill(nova_posicao);
+        eh_PowerPill(nova_posicao);
+
         break;
 
     case DIREITA:
@@ -125,6 +128,7 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
             }
         }
         eh_FoodPill(nova_posicao);
+        eh_PowerPill(nova_posicao);
         break;
 
     case CIMA:
@@ -140,6 +144,7 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
             }
         }
         eh_FoodPill(nova_posicao);
+        eh_PowerPill(nova_posicao);
         break;
 
     case BAIXO:
@@ -155,17 +160,8 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
             }
         }
         eh_FoodPill(nova_posicao);
+        eh_PowerPill(nova_posicao);
         break;
-
-
-        // case 'e':
-        //     tecla_precionada = 'e';
-        //     pacman.scale += PASSO;
-        //     break;
-        // case 'q':
-        //     tecla_precionada = 'q';
-        //     pacman.scale -= PASSO;
-        //     break;
     }
     ultima_tecla_precionada = tecla_precionada;
 
@@ -174,7 +170,7 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
 }
 
 // Função para desenhar o pacman
-void desenha_pacman(){
+void desenhaPacman(){
     //printf("[LOG] desenha_pacman()\n");
     // Desenha o avatar do Pacman
     glTranslatef(pacman.x, pacman.y, 0.0);
@@ -185,7 +181,11 @@ void desenha_pacman(){
     glScalef(pacman.scale, pacman.scale, 1.0);
 
     // Desenha o corpo do Pacman
-    glColor3f(1.0, 1.0, 0.0);
+    if (havePowerPill != 0){
+        glColor3f(0.0, 0.0, 1.0);
+    }else{
+        glColor3f(1.0, 1.0, 0.0);
+    }
     glBegin(GL_TRIANGLE_FAN);
     glVertex2f(pacman.x, pacman.y);
     for (int i = 0; i <= 360; i++) {
@@ -282,6 +282,44 @@ void desenhaFoodPill() {
     glEnd();
 }
 
+void desenhaPowerPill() {
+    //printf("[LOG] desenhaLabirinto()\n");
+    glLineWidth(2.0);
+    glColor3f(1.0, 0.0, 0.0);
+    glBegin(GL_QUADS);
+
+    for (int i = 0; i < MAZE_HEIGHT; i++) {
+        for (int j = 0; j < MAZE_WIDTH; j++) {
+            int x = (j * (SCREEN_WIDTH / MAZE_WIDTH))+20;
+            int y = ((MAZE_HEIGHT - i - 1) * (SCREEN_HEIGHT / MAZE_HEIGHT))+20;
+            int cellWidth = 10;
+            int cellHeight = 10;
+            //printf("[LOG] desenhaFoodPill: x:%d/\n", x);
+            //printf("[LOG] desenhaFoodPill: y:%d/\n", y);
+
+            if (maze[i][j] == POWER_PILL) {
+                // draw top line
+                glVertex2f(x, y + cellHeight);
+                glVertex2f(x + cellWidth, y + cellHeight);
+
+                // draw left line
+                glVertex2f(x, y);
+                glVertex2f(x, y + cellHeight);
+
+                // draw bottom line
+                glVertex2f(x, y);
+                glVertex2f(x + cellWidth, y);
+
+                // draw right line
+                glVertex2f(x + cellWidth, y);
+                glVertex2f(x + cellWidth, y + cellHeight);
+            }
+        }
+    }
+
+    glEnd();
+}
+
 // Função para verificar se o Pac-Man colidiu com uma parede
 bool eh_parede(POSICAO p){
     // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
@@ -309,10 +347,9 @@ bool eh_FoodPill(POSICAO p) {
 
     // Verificar se as coordenadas correspondem a uma comida
     if (maze[y][x] == FOOD_PILL) {
-        havePowerPill += 1;
+        haveFoodPill += 1;
         maze[y][x] = VAZIO;
         printf("[LOG] Main: FoodPill: %d\n", haveFoodPill);
-        printf("[LOG] Main: PowerPill: %d\n", havePowerPill);
         return true;
     }
     return false;
@@ -323,11 +360,12 @@ bool eh_PowerPill(POSICAO p){
     // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
     int x = (int) (p.x / TILE_SIZE);
     int y = (int) ((p.y) / TILE_SIZE);
-
+    y = 19 - y;
     // Verificar se as coordenadas correspondem a uma pirula de poder
     if(maze[y][x] == POWER_PILL) {
-        haveFoodPill += 1;
         havePowerPill += 1;
+        maze[y][x] = VAZIO;
+        printf("[LOG] Main: PowerPill: %d\n", havePowerPill);
         return true;
     }
     return false;

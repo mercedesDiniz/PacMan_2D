@@ -36,7 +36,7 @@ const int MAZE_HEIGHT = 20; //10;
 #define TILE_SIZE 20
 int maze[MAZE_HEIGHT][MAZE_WIDTH] = {
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-    {1,0,0,1,2,2,2,0,0,0,0,0,0,2,2,2,1,0,0,1},
+    {1,0,0,1,2,2,2,0,0,3,0,0,0,2,2,2,1,0,3,1},
     {1,0,0,1,2,2,0,0,0,0,0,0,0,0,2,2,1,0,0,1},
     {1,0,0,1,1,1,0,0,1,1,1,1,0,0,1,1,1,0,0,1},
     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -53,7 +53,7 @@ int maze[MAZE_HEIGHT][MAZE_WIDTH] = {
     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
     {1,0,0,1,1,1,0,0,1,1,1,1,0,0,1,1,1,0,0,1},
     {1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1},
-    {1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1},
+    {1,0,0,0,1,0,0,0,0,3,0,0,0,0,0,1,0,0,0,1},
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 };
 
@@ -71,9 +71,10 @@ int maze[MAZE_HEIGHT][MAZE_WIDTH] = {
 // };
 
 // void display();
-void desenha_pacman();
+void desenhaPacman();
 void desenhaLabirinto();
 void desenhaFoodPill();
+void desenhaPowerPill();
 // void keyboard(unsigned char key, int x, int y);
 void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
 
