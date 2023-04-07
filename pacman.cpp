@@ -75,6 +75,7 @@ int main(int argc, char** argv){
         desenhaLabirinto();
         desenhaFoodPill();
         desenhaPowerPill();
+        desenhaFantasma();
         desenhaPacman();
         glPopMatrix();
         // Swap buffers and poll events
@@ -112,6 +113,16 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
         }
         eh_FoodPill(nova_posicao);
         eh_PowerPill(nova_posicao);
+        if (eh_fantasma(nova_posicao)){
+            if (havePowerPill){
+              printf(">> MATA FANTASMA << ");
+              maze[19 - (int)(nova_posicao.y/TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
+              havePowerPill--;
+            }else{
+              printf(">> GAMER OVER << ");
+            }
+        }
+
 
         break;
 
@@ -205,6 +216,54 @@ void desenhaPacman(){
     glVertex2f(22.0, -10.0);
     glEnd();
     glPopMatrix();
+}
+
+void desenhaFantasma() {
+    for (int i = 0; i < MAZE_HEIGHT; i++) {
+        for (int j = 0; j < MAZE_WIDTH; j++) {
+            if (maze[i][j] == FANTASMA) {
+                // Define as coordenadas do quadrado
+                int x = (j * (SCREEN_WIDTH / MAZE_WIDTH))+20;
+                int y = ((MAZE_HEIGHT - i - 1) * (SCREEN_HEIGHT / MAZE_HEIGHT))+20;
+                int cellWidth = 10;
+                int cellHeight = 10;
+                float x1 = x + (cellWidth / 2) - 12;
+                float y1 = y + (cellHeight / 2) - 12;
+                float x2 = x + (cellWidth / 2) + 12;
+                float y2 = y + (cellHeight / 2) + 12;
+
+                // Define as coordenadas do centro do círculo
+                float xc = x + (cellWidth / 2);
+                float yc = y + (cellHeight / 2) + 12;
+
+                // Define o raio do círculo
+                float r = 12.0;
+
+                // Define o número de segmentos do círculo
+                int n = 100;
+
+                // Desenha o quadrado
+                glBegin(GL_QUADS);
+                glColor3f(1.0, 1.0, 1.0); // Cor branca
+                glVertex2f(x1, y1);
+                glVertex2f(x1, y2);
+                glVertex2f(x2, y2);
+                glVertex2f(x2, y1);
+                glEnd();
+
+                // Desenha o círculo
+                glBegin(GL_POLYGON);
+                glColor3f(1.0, 1.0, 1.0); // Cor vermelha
+                for (int i = 0; i < n; i++) {
+                    float theta = 2.0 * M_PI * i / n;
+                    float x = xc + r * cos(theta);
+                    float y = yc + r * sin(theta);
+                    glVertex2f(x, y);
+                }
+                glEnd();
+            }
+        }
+    }
 }
 
 // Função para desenhar o labirinto
@@ -359,7 +418,7 @@ bool eh_FoodPill(POSICAO p) {
 bool eh_PowerPill(POSICAO p){
     // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
     int x = (int) (p.x / TILE_SIZE);
-    int y = (int) ((p.y) / TILE_SIZE);
+    int y = (int) (p.y / TILE_SIZE);
     y = 19 - y;
     // Verificar se as coordenadas correspondem a uma pirula de poder
     if(maze[y][x] == POWER_PILL) {
@@ -372,17 +431,13 @@ bool eh_PowerPill(POSICAO p){
 }
 
 // Função para verificar se o Pac-Man colidiu com uma fantasma
-bool eh_fantasma(POSICAO p, POSICAO f){
-    // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
-    int px = (int) (p.x / TILE_SIZE);
-    int py = (int) (p.y / TILE_SIZE);
-
-    // Converter as coordenadas do Fantasma para as coordenadas do labirinto
-    int fx = (int) (f.x / TILE_SIZE);
-    int fy = (int) (f.y / TILE_SIZE);
-
+bool eh_fantasma(POSICAO p){
+    /// Converter as coordenadas do Pac-Man para as coordenadas do labirinto
+    int x = (int) (p.x / TILE_SIZE);
+    int y = (int) ((p.y) / TILE_SIZE);
+    y = 19 - y;
     // Verificar se as coordenadas correspondem a uma pirula de poder
-    if(px == fx && py == fy) return true;
+    if(maze[y][x] == FANTASMA) return true;
     return false;
 }
 
