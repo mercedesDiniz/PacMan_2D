@@ -17,6 +17,7 @@ typedef struct posicao POSICAO;
 #define ESQUERDA GLFW_KEY_A      // 'a'
 #define EXPLODE GLFW_KEY_BACKSPACE // 'b'
 
+#define VAZIO 0
 #define PAREDE 1
 #define FOOD_PILL 2
 #define POWER_PILL 3

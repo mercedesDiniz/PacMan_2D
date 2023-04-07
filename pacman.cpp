@@ -16,6 +16,7 @@ POSICAO pacman; // posição atual do pacman
 POSICAO fantasme01; // posição atual do pacman
 POSICAO fantasme02; // posição atual do pacman
 
+int haveFoodPill = 0;  // qtd de pilulas de comida
 int havePowerPill = 0; // qtd de pilulas de poder
 char ultima_tecla_precionada;
 char tecla_precionada = DIREITA;
@@ -64,6 +65,7 @@ int main(int argc, char** argv){
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         //printf("[LOG] Main loop\n");
+
         // Clear the screen
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -78,7 +80,6 @@ int main(int argc, char** argv){
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-
     }
 
     // Terminate GLFW
@@ -89,69 +90,72 @@ int main(int argc, char** argv){
 // FUCTIONS:
 
 // Função tratar as entradas no teclado
-void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
+void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    //printf("[LOG] keyboard()\n");
 
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) glfwSetWindowShouldClose(window, GLFW_TRUE);
 
     POSICAO nova_posicao;
     switch (key) {
-        case ESQUERDA:
-            tecla_precionada = ESQUERDA;
+    case ESQUERDA:
+        tecla_precionada = ESQUERDA;
 
-            // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-            nova_posicao = { static_cast<float>(pacman.x - PASSO-9), static_cast<float>(pacman.y)};
-            if (!eh_parede(nova_posicao)){
-                pacman.x -= PASSO;
-                if(ultima_tecla_precionada != tecla_precionada){
-                    pacman.angle = 0.0;
-                    pacman.angle -= 180.0;
-                }
+        // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
+        nova_posicao = { static_cast<float>(pacman.x - PASSO - 9), static_cast<float>(pacman.y) };
+        if (!eh_parede(nova_posicao)) {
+            pacman.x -= PASSO;
+            if (ultima_tecla_precionada != tecla_precionada) {
+                pacman.angle = 0.0;
+                pacman.angle -= 180.0;
             }
-            break;
+        }
+        eh_FoodPill(nova_posicao);
+        break;
 
-        case DIREITA:
-            tecla_precionada = DIREITA;
+    case DIREITA:
+        tecla_precionada = DIREITA;
 
-            // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-            nova_posicao = { static_cast<float>(pacman.x + PASSO+9), static_cast<float>(pacman.y) };
-            if (!eh_parede(nova_posicao)){
-                pacman.x += PASSO;
-                if(ultima_tecla_precionada != tecla_precionada){
-                    pacman.angle = 0.0;
-                    pacman.angle += 360.0;
-                }
+        // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
+        nova_posicao = { static_cast<float>(pacman.x + PASSO + 9), static_cast<float>(pacman.y) };
+        if (!eh_parede(nova_posicao)) {
+            pacman.x += PASSO;
+            if (ultima_tecla_precionada != tecla_precionada) {
+                pacman.angle = 0.0;
+                pacman.angle += 360.0;
             }
-            break;
+        }
+        eh_FoodPill(nova_posicao);
+        break;
 
-        case CIMA:
-            tecla_precionada = CIMA;
+    case CIMA:
+        tecla_precionada = CIMA;
 
-            // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-            nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y + PASSO+9) };
-            if (!eh_parede(nova_posicao)){
-                pacman.y += PASSO;
-                if(ultima_tecla_precionada != tecla_precionada){
-                    pacman.angle = 0.0;
-                    pacman.angle += 90.0;
-                }
+        // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
+        nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y + PASSO + 9) };
+        if (!eh_parede(nova_posicao)) {
+            pacman.y += PASSO;
+            if (ultima_tecla_precionada != tecla_precionada) {
+                pacman.angle = 0.0;
+                pacman.angle += 90.0;
             }
+        }
+        eh_FoodPill(nova_posicao);
+        break;
 
-            break;
+    case BAIXO:
+        tecla_precionada = BAIXO;
 
-        case BAIXO:
-            tecla_precionada = BAIXO;
-
-            // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-            nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y - PASSO-9) };
-            if (!eh_parede(nova_posicao)){
-                pacman.y -= PASSO;
-                if(ultima_tecla_precionada != tecla_precionada){
-                    pacman.angle = 0.0;
-                    pacman.angle -= 90.0;
-                }
+        // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
+        nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y - PASSO - 9) };
+        if (!eh_parede(nova_posicao)) {
+            pacman.y -= PASSO;
+            if (ultima_tecla_precionada != tecla_precionada) {
+                pacman.angle = 0.0;
+                pacman.angle -= 90.0;
             }
-
-            break;
+        }
+        eh_FoodPill(nova_posicao);
+        break;
 
 
         // case 'e':
@@ -297,14 +301,18 @@ bool eh_parede(POSICAO p){
 }
 
 // Função para verificar se o Pac-Man encontrou comida
-bool eh_FoodPill(POSICAO p){
+bool eh_FoodPill(POSICAO p) {
     // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
-    int x = (int) (p.x / TILE_SIZE);
-    int y = (int) (p.y / TILE_SIZE);
+    int x = (int)(p.x / TILE_SIZE);
+    int y = (int)(p.y / TILE_SIZE);
+    y = 19 - y;
 
     // Verificar se as coordenadas correspondem a uma comida
-    if(maze[y][x] == FOOD_PILL) {
+    if (maze[y][x] == FOOD_PILL) {
         havePowerPill += 1;
+        maze[y][x] = VAZIO;
+        printf("[LOG] Main: FoodPill: %d\n", haveFoodPill);
+        printf("[LOG] Main: PowerPill: %d\n", havePowerPill);
         return true;
     }
     return false;
@@ -318,6 +326,7 @@ bool eh_PowerPill(POSICAO p){
 
     // Verificar se as coordenadas correspondem a uma pirula de poder
     if(maze[y][x] == POWER_PILL) {
+        haveFoodPill += 1;
         havePowerPill += 1;
         return true;
     }
