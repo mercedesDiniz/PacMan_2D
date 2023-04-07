@@ -36,8 +36,8 @@ int main(int argc, char** argv){
     glutInitDisplayMode(GLUT_DOUBLE);
     glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    pacman.x = SCREEN_WIDTH/8.5; // coordenada da horizontal
-    pacman.y = SCREEN_HEIGHT/13; // coordenada da vertical
+    pacman.x = SCREEN_WIDTH/4; // coordenada da horizontal
+    pacman.y = SCREEN_HEIGHT/4; // coordenada da vertical
     pacman.angle = 0.0;
     pacman.scale = 1.0;
 
