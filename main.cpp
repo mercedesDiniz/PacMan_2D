@@ -88,7 +88,7 @@ int main(int argc, char** argv){
 
 // FUCTIONS:
 
-// void keyboard(unsigned char key, int x, int y){
+// Função tratar as entradas no teclado
 void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
     printf("[LOG] keyboard()\n");
 
@@ -170,7 +170,7 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
     glfwSwapBuffers(window);
 }
 
-
+// Função para desenhar o pacman
 void desenha_pacman(){
     printf("[LOG] desenha_pacman()\n");
     // Desenha o avatar do Pacman
@@ -204,6 +204,7 @@ void desenha_pacman(){
     glPopMatrix();
 }
 
+// Função para desenhar o labirinto
 void desenhaLabirinto() {
     printf("[LOG] desenhaLabirinto()\n");
     glLineWidth(2.0);
@@ -241,12 +242,6 @@ void desenhaLabirinto() {
 }
 
 // Função para verificar se o Pac-Man colidiu com uma parede
-bool pode_andar(POSICAO p) {
-    // Verificar se as coordenadas correspondem a uma parede
-    // if (!eh_parede(p)) return true;
-    return false;
-}
-
 bool eh_parede(POSICAO p, int borda){
     // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
     int x = (int) ((p.x / TILE_SIZE) + borda);
@@ -257,6 +252,7 @@ bool eh_parede(POSICAO p, int borda){
     return false;
 }
 
+// Função para verificar se o Pac-Man encontrou comida
 bool eh_FoodPill(POSICAO p){
     // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
     int x = (int) (p.x / TILE_SIZE);
@@ -270,6 +266,7 @@ bool eh_FoodPill(POSICAO p){
     return false;
 }
 
+// Função para verificar se o Pac-Man encontrou uma pirula de poder
 bool eh_PowerPill(POSICAO p){
     // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
     int x = (int) (p.x / TILE_SIZE);
@@ -283,6 +280,7 @@ bool eh_PowerPill(POSICAO p){
     return false;
 }
 
+// Função para verificar se o Pac-Man colidiu com uma fantasma
 bool eh_fantasma(POSICAO p, POSICAO f){
     // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
     int px = (int) (p.x / TILE_SIZE);

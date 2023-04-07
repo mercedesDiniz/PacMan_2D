@@ -15,37 +15,70 @@ typedef struct posicao POSICAO;
 #define BAIXO GLFW_KEY_S         // 's'
 #define DIREITA GLFW_KEY_D       // 'd'
 #define ESQUERDA GLFW_KEY_A      // 'a'
-#define BOMBA GLFW_KEY_BACKSPACE // 'b'
+#define EXPLODE GLFW_KEY_BACKSPACE // 'b'
+
+#define PAREDE 1
+#define FOOD_PILL 2
+#define POWER_PILL 3
+
 
 #define PASSO 1.5
 
 
-const int SCREEN_WIDTH = 800;  // 1800;
-const int SCREEN_HEIGHT = 600; // 1000;
+const int SCREEN_WIDTH = 800;  // 800 1800;
+const int SCREEN_HEIGHT = 800; // 600 1000
 
-const int MAZE_WIDTH = 10;
-const int MAZE_HEIGHT = 10;
+const int MAZE_WIDTH = 20; //10;
+const int MAZE_HEIGHT = 20; //10;
 
-
+#define RAIO_PACMAN 1 
 #define TILE_SIZE 20
-
 int maze[MAZE_HEIGHT][MAZE_WIDTH] = {
-    {1,1,1,1,1,1,1,1,1,1},
-    {1,0,1,0,0,0,0,0,0,1},
-    {1,0,1,0,1,1,1,1,0,1},
-    {1,0,1,0,0,0,0,1,0,1},
-    {1,0,1,1,1,1,0,1,0,1},
-    {1,0,0,0,0,1,0,1,0,1},
-    {1,0,1,1,0,1,0,1,0,1},
-    {1,0,0,1,0,1,0,0,0,1},
-    {1,1,0,1,0,0,0,1,1,1},
-    {1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1},
+    {1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1},
+    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {1,1,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {1,1,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 };
+
+// int maze[MAZE_HEIGHT][MAZE_WIDTH] = {
+//     {1,1,1,1,1,1,1,1,1,1},
+//     {1,0,1,0,0,0,0,0,0,1},
+//     {1,0,1,0,1,1,1,1,0,1},
+//     {1,0,1,0,0,0,0,1,0,1},
+//     {1,0,1,1,1,1,0,1,0,1},
+//     {1,0,0,0,0,1,0,1,0,1},
+//     {1,0,1,1,0,1,0,1,0,1},
+//     {1,0,0,1,0,1,0,0,0,1},
+//     {1,1,0,1,0,0,0,1,1,1},
+//     {1,1,1,1,1,1,1,1,1,1},
+// };
 
 // void display();
 void desenha_pacman();
 void desenhaLabirinto();
 // void keyboard(unsigned char key, int x, int y);
 void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+// bool eh_parede(POSICAO p);
+bool eh_parede(POSICAO p, int borda);
+bool eh_FoodPill(POSICAO p);
+bool eh_PowerPill(POSICAO p);
+bool eh_fantasma(POSICAO p, POSICAO f);
 bool colisao_parede(POSICAO p);
 #endif
