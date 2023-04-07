@@ -4,7 +4,7 @@
         ./pacman.out
 */
 
-//#define _USE_MATH_DEFINES           # Para rodar no Visual Studio descomente essa linha
+//#define _USE_MATH_DEFINES           //# Para rodar no Visual Studio descomente essa linha
 #include <stdio.h>
 #include <GL/glut.h>
 #include <GLFW/glfw3.h>
@@ -244,14 +244,16 @@ void desenhaFoodPill() {
     //printf("[LOG] desenhaLabirinto()\n");
     glLineWidth(2.0);
     glColor3f(1.0, 1.0, 1.0);
-    glBegin(GL_LINES);
+    glBegin(GL_QUADS);
 
     for (int i = 0; i < MAZE_HEIGHT; i++) {
         for (int j = 0; j < MAZE_WIDTH; j++) {
-            int x = j * (SCREEN_WIDTH / MAZE_WIDTH);
-            int y = (MAZE_HEIGHT - i - 1) * (SCREEN_HEIGHT / MAZE_HEIGHT);
-            int cellWidth = 6;
-            int cellHeight = 6;
+            int x = (j * (SCREEN_WIDTH / MAZE_WIDTH))+20;
+            int y = ((MAZE_HEIGHT - i - 1) * (SCREEN_HEIGHT / MAZE_HEIGHT))+20;
+            int cellWidth = 10;
+            int cellHeight = 10;
+            //printf("[LOG] desenhaFoodPill: x:%d/\n", x);
+            //printf("[LOG] desenhaFoodPill: y:%d/\n", y);
 
             if (maze[i][j] == FOOD_PILL) {
                 // draw top line
