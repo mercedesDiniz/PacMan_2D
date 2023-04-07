@@ -22,7 +22,7 @@ typedef struct posicao POSICAO;
 #define POWER_PILL 3
 
 
-#define PASSO 1.5
+#define PASSO 5.5
 
 
 const int SCREEN_WIDTH = 800;  // 800 1800;
@@ -47,10 +47,10 @@ int maze[MAZE_HEIGHT][MAZE_WIDTH] = {
     {1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1},
     {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
     {1,1,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1},
-    {1,1,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1},
-    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+    {1,1,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,0,1,1},
+    {1,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,1,1},
+    {1,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,1,1},
     {1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1},
-    {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
     {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -76,7 +76,7 @@ void desenhaLabirinto();
 void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 // bool eh_parede(POSICAO p);
-bool eh_parede(POSICAO p, int borda);
+bool eh_parede(POSICAO p);
 bool eh_FoodPill(POSICAO p);
 bool eh_PowerPill(POSICAO p);
 bool eh_fantasma(POSICAO p, POSICAO f);
