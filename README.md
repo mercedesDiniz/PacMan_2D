@@ -27,11 +27,15 @@ mantida pelo Khronos Group.
     ~~~bash
     sudo apt-get install libxmu-dev libxi-dev
     ~~~
-    4. Após completar as instalações, compile seu código com:
+    4. Instale a biblioteca GLFW:
     ~~~bash
-    g++ -o exemplo.out exemplo.cpp -lglut -lGLU -lGL -lm
+    sudo apt-get install libglfw3-dev
     ~~~
-    5. Execute o programa
+    5. Após completar as instalações, compile seu código com:
+    ~~~bash
+    g++ -o exemplo.out exemplo.cpp -lglfw -lglut -lGLU -lGL -lm
+    ~~~
+    6. Execute o programa
     ~~~bash
     ./exemplo.out
     ~~~
