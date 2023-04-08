@@ -1,21 +1,18 @@
-/*  Compilar:
-        g++ pacman.cpp -lglfw -lglut -lGL -lGLU -o pacman.out
-    Executar:
-        ./pacman.out
-*/
+/* PACMAN - 2D modeling project with OpenGL 
+ *  - Compilar: g++ pacman.cpp -lSOIL -lglfw -lglut -lGL -lGLU -o pacman.out
+ *  - Executar: ./pacman.out
+ */
 
 //#define _USE_MATH_DEFINES           //# Para rodar no Visual Studio descomente essa linha
 #include <stdio.h>
+#include <math.h>
 #include <GL/glut.h>
 #include <GLFW/glfw3.h>
 #include <SOIL/SOIL.h>
-#include <math.h>
 #include "pacman.h"
 
 // Declarando Variaveis Globais
 POSICAO pacman; // posição atual do pacman
-POSICAO fantasme01; // posição atual do pacman
-POSICAO fantasme02; // posição atual do pacman
 
 int haveFoodPill = 0;  // qtd de pilulas de comida
 int havePowerPill = 0; // qtd de pilulas de poder
@@ -224,9 +221,9 @@ void desenhaPacman(){
 
     // Desenha o corpo do Pacman
     if (havePowerPill != 0){
-        glColor3f(0.0, 0.0, 1.0);
+        glColor3f(1.0, 0.5, 0.0); // laranja
     }else{
-        glColor3f(1.0, 1.0, 0.0);
+        glColor3f(1.0, 1.0, 0.0); // amarelo
     }
     glBegin(GL_TRIANGLE_FAN);
     glVertex2f(pacman.x, pacman.y);
@@ -294,7 +291,7 @@ void desenhaFantasma() {
 void desenhaLabirinto() {
     //printf("[LOG] desenhaLabirinto()\n");
     glLineWidth(2.0);
-    glColor3f(0.0, 0.0, 1.0);
+    glColor3f(0.0, 0.0, 1.0); // azul
     glBegin(GL_LINES);
 
     for (int i = 0; i < MAZE_HEIGHT; i++) {
@@ -330,7 +327,7 @@ void desenhaLabirinto() {
 void desenhaFoodPill() {
     //printf("[LOG] desenhaLabirinto()\n");
     glLineWidth(2.0);
-    glColor3f(1.0, 1.0, 1.0);
+    glColor3f(1.0, 1.0, 1.0); // branco
     glBegin(GL_QUADS);
 
     for (int i = 0; i < MAZE_HEIGHT; i++) {
@@ -368,7 +365,7 @@ void desenhaFoodPill() {
 void desenhaPowerPill() {
     //printf("[LOG] desenhaLabirinto()\n");
     glLineWidth(2.0);
-    glColor3f(1.0, 0.0, 0.0);
+    glColor3f(1.0, 0.0, 0.0); // vermelho
     glBegin(GL_QUADS);
 
     for (int i = 0; i < MAZE_HEIGHT; i++) {
@@ -464,4 +461,3 @@ bool eh_fantasma(POSICAO p){
     if(maze[y][x] == FANTASMA) return true;
     return false;
 }
-
