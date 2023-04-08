@@ -212,8 +212,8 @@ void desenhaPacman(){
     glColor3f(0.0, 0.0, 0.0); // Preto
     glBegin(GL_TRIANGLES);
     glVertex2f(0.0, 0.0);
-    glVertex2f(22.0, 13.0);
-    glVertex2f(22.0, -10.0);
+    glVertex2f(20.0, 13.0);
+    glVertex2f(20.0, -10.0);
     glEnd();
     glPopMatrix();
 }
@@ -244,7 +244,7 @@ void desenhaFantasma() {
 
                 // Desenha o quadrado
                 glBegin(GL_QUADS);
-                glColor3f(1.0, 1.0, 1.0); // Cor branca
+                glColor3f(0.4, 0.4, 0.4); // Cor branca
                 glVertex2f(x1, y1);
                 glVertex2f(x1, y2);
                 glVertex2f(x2, y2);
@@ -253,13 +253,48 @@ void desenhaFantasma() {
 
                 // Desenha o círculo
                 glBegin(GL_POLYGON);
-                glColor3f(1.0, 1.0, 1.0); // Cor vermelha
+                glColor3f(0.4, 0.4, 0.4); // Cor vermelha
                 for (int i = 0; i < n; i++) {
                     float theta = 2.0 * M_PI * i / n;
                     float x = xc + r * cos(theta);
                     float y = yc + r * sin(theta);
                     glVertex2f(x, y);
                 }
+                glEnd();
+
+                // Desenha o olho esquerdo do fantasma
+                glColor3f(1.0, 0.0, 0.0); // Branco
+                glBegin(GL_POLYGON);
+                glVertex2f(x - cellWidth / 4, y + cellWidth / 2+12);
+                glVertex2f(x + cellWidth / 4, y + cellWidth / 2+12);
+                glVertex2f(x + cellWidth / 4, y + cellWidth / 4+12);
+                glVertex2f(x - cellWidth / 4, y + cellWidth / 4+12);
+                glEnd();
+
+                // Desenha o olho direito do fantasma
+                glColor3f(1.0, 0.0, 0.0); // Branco
+                glBegin(GL_POLYGON);
+                glVertex2f(x - cellWidth / 4 + 10, y + cellWidth / 2 + 12);
+                glVertex2f(x + cellWidth / 4 + 10, y + cellWidth / 2 + 12);
+                glVertex2f(x + cellWidth / 4 + 10, y + cellWidth / 4 + 12);
+                glVertex2f(x - cellWidth / 4 + 10, y + cellWidth / 4 + 12);
+                glEnd();
+
+                // Desenha a saia do fantasma
+                glColor3f(0.0, 0.0, 0.0); // Branco
+                glBegin(GL_POLYGON);
+                glVertex2f(x - cellWidth / 4 + 10, y + cellWidth / 2 - 9);
+                glVertex2f(x + cellWidth / 4 + 10, y + cellWidth / 2 - 9);
+                glVertex2f(x + cellWidth / 4 + 10, y + cellWidth / 4 - 9);
+                glVertex2f(x - cellWidth / 4 + 10, y + cellWidth / 4 - 9);
+                glEnd();
+                // Desenha a saia do fantasma
+                glColor3f(0.0, 0.0, 0.0); // Branco
+                glBegin(GL_POLYGON);
+                glVertex2f(x - cellWidth / 4 , y + cellWidth / 2 - 9);
+                glVertex2f(x + cellWidth / 4 , y + cellWidth / 2 - 9);
+                glVertex2f(x + cellWidth / 4 , y + cellWidth / 4 - 9);
+                glVertex2f(x - cellWidth / 4 , y + cellWidth / 4 - 9);
                 glEnd();
             }
         }
