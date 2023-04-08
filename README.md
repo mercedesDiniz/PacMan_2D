@@ -31,13 +31,17 @@ mantida pelo Khronos Group.
     ~~~bash
     sudo apt-get install libglfw3-dev
     ~~~
-    5. Após completar as instalações, compile seu código com:
+    5. Instale a biblioteca SOIL:
     ~~~bash
-    g++ -o exemplo.out exemplo.cpp -lglfw -lglut -lGLU -lGL -lm
+    sudo apt-get install libsoil-dev
     ~~~
-    6. Execute o programa
+    6. Após completar as instalações, compile seu código com:
     ~~~bash
-    ./exemplo.out
+    g++ pacman.cpp -lSOIL -lglfw -lglut -lGL -lGLU -o pacman.out
+    ~~~
+    7. Execute o programa
+    ~~~bash
+    ./pacman.out
     ~~~
 
 - Windows:
