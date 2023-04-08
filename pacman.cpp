@@ -140,6 +140,16 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
         }
         eh_FoodPill(nova_posicao);
         eh_PowerPill(nova_posicao);
+        if (eh_fantasma(nova_posicao)) {
+            if (havePowerPill) {
+                printf(">> MATA FANTASMA << ");
+                maze[19 - (int)(nova_posicao.y / TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
+                havePowerPill--;
+            }
+            else {
+                printf(">> GAMER OVER << ");
+            }
+        }
         break;
 
     case CIMA:
@@ -156,6 +166,16 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
         }
         eh_FoodPill(nova_posicao);
         eh_PowerPill(nova_posicao);
+        if (eh_fantasma(nova_posicao)) {
+            if (havePowerPill) {
+                printf(">> MATA FANTASMA << ");
+                maze[19 - (int)(nova_posicao.y / TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
+                havePowerPill--;
+            }
+            else {
+                printf(">> GAMER OVER << ");
+            }
+        }
         break;
 
     case BAIXO:
@@ -172,6 +192,16 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
         }
         eh_FoodPill(nova_posicao);
         eh_PowerPill(nova_posicao);
+        if (eh_fantasma(nova_posicao)) {
+            if (havePowerPill) {
+                printf(">> MATA FANTASMA << ");
+                maze[19 - (int)(nova_posicao.y / TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
+                havePowerPill--;
+            }
+            else {
+                printf(">> GAMER OVER << ");
+            }
+        }
         break;
     }
     ultima_tecla_precionada = tecla_precionada;
