@@ -6,6 +6,7 @@
 //#define _USE_MATH_DEFINES           //# Para rodar no Visual Studio descomente essa linha
 #include <stdio.h>
 #include <math.h>
+#include <unistd.h> // para a função sleep()
 #include <GL/glut.h>
 #include <GLFW/glfw3.h>
 #include <SOIL/SOIL.h>
@@ -76,6 +77,7 @@ int main(int argc, char** argv){
         desenhaFoodPill();
         desenhaFantasma();
         desenhaPowerPill();
+        morreu();
         desenhaPacman();
         glPopMatrix();
         // Swap buffers and poll events
@@ -101,117 +103,120 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
     //printf("[LOG] keyboard()\n");
 
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) glfwSetWindowShouldClose(window, GLFW_TRUE);
+    
+    if(!(game_over)) {
+        POSICAO nova_posicao;
+        switch (key) {
+        case ESQUERDA:
+            tecla_precionada = ESQUERDA;
 
-    POSICAO nova_posicao;
-    switch (key) {
-    case ESQUERDA:
-        tecla_precionada = ESQUERDA;
-
-        // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-        nova_posicao = { static_cast<float>(pacman.x - PASSO - 9), static_cast<float>(pacman.y) };
-        if (!eh_parede(nova_posicao)) {
-            pacman.x -= PASSO;
-            if (ultima_tecla_precionada != tecla_precionada) {
-                pacman.angle = 0.0;
-                pacman.angle -= 180.0;
+            // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
+            nova_posicao = { static_cast<float>(pacman.x - PASSO - 9), static_cast<float>(pacman.y) };
+            if (!eh_parede(nova_posicao)) {
+                pacman.x -= PASSO;
+                if (ultima_tecla_precionada != tecla_precionada) {
+                    pacman.angle = 0.0;
+                    pacman.angle -= 180.0;
+                }
             }
-        }
-        eh_FoodPill(nova_posicao);
-        eh_PowerPill(nova_posicao);
-        if (eh_fantasma(nova_posicao)){
-            if (havePowerPill){
-              printf(">> MATA FANTASMA << ");
-              maze[19 - (int)(nova_posicao.y/TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
-              havePowerPill--;
-            }else{
-              printf(">> GAMER OVER << ");
-              game_over = true;
-            }
-        }
-
-
-        break;
-
-    case DIREITA:
-        tecla_precionada = DIREITA;
-
-        // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-        nova_posicao = { static_cast<float>(pacman.x + PASSO + 9), static_cast<float>(pacman.y) };
-        if (!eh_parede(nova_posicao)) {
-            pacman.x += PASSO;
-            if (ultima_tecla_precionada != tecla_precionada) {
-                pacman.angle = 0.0;
-                pacman.angle += 360.0;
-            }
-        }
-        eh_FoodPill(nova_posicao);
-        eh_PowerPill(nova_posicao);
-        if (eh_fantasma(nova_posicao)) {
-            if (havePowerPill) {
+            eh_FoodPill(nova_posicao);
+            eh_PowerPill(nova_posicao);
+            if (eh_fantasma(nova_posicao)){
+                if (havePowerPill){
                 printf(">> MATA FANTASMA << ");
-                maze[19 - (int)(nova_posicao.y / TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
+                maze[19 - (int)(nova_posicao.y/TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
                 havePowerPill--;
-            }
-            else {
+                }else{
                 printf(">> GAMER OVER << ");
                 game_over = true;
+                }
             }
-        }
-        break;
 
-    case CIMA:
-        tecla_precionada = CIMA;
 
-        // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-        nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y + PASSO + 9) };
-        if (!eh_parede(nova_posicao)) {
-            pacman.y += PASSO;
-            if (ultima_tecla_precionada != tecla_precionada) {
-                pacman.angle = 0.0;
-                pacman.angle += 90.0;
-            }
-        }
-        eh_FoodPill(nova_posicao);
-        eh_PowerPill(nova_posicao);
-        if (eh_fantasma(nova_posicao)) {
-            if (havePowerPill) {
-                printf(">> MATA FANTASMA << ");
-                maze[19 - (int)(nova_posicao.y / TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
-                havePowerPill--;
-            }
-            else {
-                printf(">> GAMER OVER << ");
-                game_over = true;
-            }
-        }
-        break;
+            break;
 
-    case BAIXO:
-        tecla_precionada = BAIXO;
+        case DIREITA:
+            tecla_precionada = DIREITA;
 
-        // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-        nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y - PASSO - 9) };
-        if (!eh_parede(nova_posicao)) {
-            pacman.y -= PASSO;
-            if (ultima_tecla_precionada != tecla_precionada) {
-                pacman.angle = 0.0;
-                pacman.angle -= 90.0;
+            // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
+            nova_posicao = { static_cast<float>(pacman.x + PASSO + 9), static_cast<float>(pacman.y) };
+            if (!eh_parede(nova_posicao)) {
+                pacman.x += PASSO;
+                if (ultima_tecla_precionada != tecla_precionada) {
+                    pacman.angle = 0.0;
+                    pacman.angle += 360.0;
+                }
             }
+            eh_FoodPill(nova_posicao);
+            eh_PowerPill(nova_posicao);
+            if (eh_fantasma(nova_posicao)) {
+                if (havePowerPill) {
+                    printf(">> MATA FANTASMA << ");
+                    maze[19 - (int)(nova_posicao.y / TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
+                    havePowerPill--;
+                }
+                else {
+                    printf(">> GAMER OVER << ");
+                    game_over = true;
+                }
+            }
+            break;
+
+        case CIMA:
+            tecla_precionada = CIMA;
+
+            // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
+            nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y + PASSO + 9) };
+            if (!eh_parede(nova_posicao)) {
+                pacman.y += PASSO;
+                if (ultima_tecla_precionada != tecla_precionada) {
+                    pacman.angle = 0.0;
+                    pacman.angle += 90.0;
+                }
+            }
+            eh_FoodPill(nova_posicao);
+            eh_PowerPill(nova_posicao);
+            if (eh_fantasma(nova_posicao)) {
+                if (havePowerPill) {
+                    printf(">> MATA FANTASMA << ");
+                    maze[19 - (int)(nova_posicao.y / TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
+                    havePowerPill--;
+                }
+                else {
+                    printf(">> GAMER OVER << ");
+                    game_over = true;
+                }
+            }
+            break;
+
+        case BAIXO:
+            tecla_precionada = BAIXO;
+
+            // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
+            nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y - PASSO - 9) };
+            if (!eh_parede(nova_posicao)) {
+                pacman.y -= PASSO;
+                if (ultima_tecla_precionada != tecla_precionada) {
+                    pacman.angle = 0.0;
+                    pacman.angle -= 90.0;
+                }
+            }
+            eh_FoodPill(nova_posicao);
+            eh_PowerPill(nova_posicao);
+            if (eh_fantasma(nova_posicao)) {
+                if (havePowerPill) {
+                    printf(">> MATA FANTASMA << ");
+                    maze[19 - (int)(nova_posicao.y / TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
+                    havePowerPill--;
+                }
+                else {
+                    printf(">> GAMER OVER << ");
+                    game_over = true;
+                }
+            }
+            break;
         }
-        eh_FoodPill(nova_posicao);
-        eh_PowerPill(nova_posicao);
-        if (eh_fantasma(nova_posicao)) {
-            if (havePowerPill) {
-                printf(">> MATA FANTASMA << ");
-                maze[19 - (int)(nova_posicao.y / TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
-                havePowerPill--;
-            }
-            else {
-                printf(">> GAMER OVER << ");
-                game_over = true;
-            }
-        }
-        break;
+
     }
     ultima_tecla_precionada = tecla_precionada;
 
@@ -271,9 +276,9 @@ void desenhaPacman(){
     glTranslatef(pacman.x, pacman.y, 0.0);
     glPushMatrix();
     glRotatef(pacman.angle, 0.0, 0.0, 1.0);
+    glScalef(pacman.scale, pacman.scale, 1.0);
     glPopMatrix();
     glFlush();
-    glScalef(pacman.scale, pacman.scale, 1.0);
 
     // Desenha o corpo do Pacman
     if (havePowerPill != 0){
@@ -293,6 +298,7 @@ void desenhaPacman(){
     glPushMatrix();
     glTranslatef(pacman.x, pacman.y, 0.0);
     glRotatef(pacman.angle, 0.0, 0.0, 1.0);
+    glScalef(pacman.scale, pacman.scale, 1.0);
     glColor3f(0.0, 0.0, 0.0); // Preto
     glBegin(GL_TRIANGLES);
     glVertex2f(0.0, 0.0);
@@ -340,6 +346,19 @@ void desenhaFantasma() {
                 glDisable(GL_BLEND);
                 glDisable(GL_TEXTURE_2D);
             }
+        }
+    }
+}
+
+void morreu(){
+    if(game_over){
+        if (pacman.scale>0.0 ) {
+            pacman.scale -= 0.1;
+            glPushMatrix();
+            desenhaPacman();
+            glPopMatrix();
+            printf("[LOG] morreu: escala = %f\n",pacman.scale);
+            sleep(0.75); // pausa o programa por 1 segundo
         }
     }
 }

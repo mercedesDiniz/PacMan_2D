@@ -87,4 +87,5 @@ bool eh_FoodPill(POSICAO p);
 bool eh_PowerPill(POSICAO p);
 bool eh_fantasma(POSICAO p);
 bool colisao_parede(POSICAO p);
+void morreu();
 #endif
