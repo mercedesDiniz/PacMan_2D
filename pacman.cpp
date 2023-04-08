@@ -3,18 +3,17 @@
  *  - Executar: ./pacman.out
  */
 
-//#define _USE_MATH_DEFINES  // Para rodar no Visual Studio descomente essa linha
+//#define _USE_MATH_DEFINES           //# Para rodar no Visual Studio descomente essa linha
 #include <stdio.h>
 #include <math.h>
-#include <unistd.h>
+#include <unistd.h> // para a função sleep()
 #include <GL/glut.h>
-#include <GLFW/glfw3.h>    
+#include <GLFW/glfw3.h>
 #include <SOIL/SOIL.h>
 #include "pacman.h"
 
-// GLOBAL VARIABLES
+// Declarando Variaveis Globais
 POSICAO pacman; // posição atual do pacman
-FANTASMAS fantasmas[num_fantasmas]; // coordenadas dos fantasmas
 
 int haveFoodPill = 0;  // qtd de pilulas de comida
 int havePowerPill = 0; // qtd de pilulas de poder
@@ -22,6 +21,7 @@ char ultima_tecla_precionada;
 char tecla_precionada = DIREITA;
 
 bool game_over = false;
+
 
 // MAIN
 int main(int argc, char** argv){
@@ -75,7 +75,7 @@ int main(int argc, char** argv){
         glPushMatrix();
         desenhaLabirinto();
         desenhaFoodPill();
-        rotinaFantasma();
+        desenhaFantasma();
         desenhaPowerPill();
         morreu();
         desenhaPacman();
@@ -111,7 +111,7 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
             tecla_precionada = ESQUERDA;
 
             // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-            nova_posicao = {static_cast<float>(pacman.x - PASSO - 9), static_cast<float>(pacman.y)};
+            nova_posicao = { static_cast<float>(pacman.x - PASSO - 9), static_cast<float>(pacman.y) };
             if (!eh_parede(nova_posicao)) {
                 pacman.x -= PASSO;
                 if (ultima_tecla_precionada != tecla_precionada) {
@@ -166,7 +166,7 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
             tecla_precionada = CIMA;
 
             // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-            nova_posicao = {static_cast<float>(pacman.x), static_cast<float>(pacman.y + PASSO + 9)};
+            nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y + PASSO + 9) };
             if (!eh_parede(nova_posicao)) {
                 pacman.y += PASSO;
                 if (ultima_tecla_precionada != tecla_precionada) {
@@ -310,13 +310,9 @@ void desenhaPacman(){
 
 // Função para desenha os Fantasmas
 void desenhaFantasma() {
-    int cont = 0;
     for (int i = 0; i < MAZE_HEIGHT; i++) {
         for (int j = 0; j < MAZE_WIDTH; j++) {
             if (maze[i][j] == FANTASMA) {
-                cont++;
-                fantasmas[cont] = {static_cast<int>(i), static_cast<int>(j)};
-
                 // Define as coordenadas do quadrado
                 int x = (j * (SCREEN_WIDTH / MAZE_WIDTH))+20;
                 int y = ((MAZE_HEIGHT - i - 1) * (SCREEN_HEIGHT / MAZE_HEIGHT))+20;
@@ -350,9 +346,8 @@ void desenhaFantasma() {
                 glDisable(GL_BLEND);
                 glDisable(GL_TEXTURE_2D);
             }
-  
         }
-    } 
+    }
 }
 
 void morreu(){
@@ -501,23 +496,6 @@ bool eh_parede(POSICAO p){
     return false;
 }
 
-bool eh_parede_xy(int x, int y){
-    // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
-    // int x = (int) (p.x / TILE_SIZE);
-    // int y = (int) (p.y / TILE_SIZE);
-    // y = 19 - y;
-    printf("x: %d\n",x);
-    printf("y: %d\n" ,y);
-    printf("\n");
-
-    // Verificar se as coordenadas correspondem a uma parede
-    if (maze[y][x] == PAREDE) {
-        printf("colidiu\n");
-        return true;
-    }
-    return false;
-}
-
 // Função para verificar se o Pac-Man encontrou comida
 bool eh_FoodPill(POSICAO p) {
     // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
@@ -562,43 +540,3 @@ bool eh_fantasma(POSICAO p){
     return false;
 }
 
-
-void rotinaFantasma(){
-    moveFantasmas(1);
-    glPushMatrix();
-    desenhaFantasma();
-    glPopMatrix();
-
-    sleep(0.7);
-
-    moveFantasmas(0);
-    glPushMatrix();
-    desenhaFantasma();
-    glPopMatrix();
-
-}
-void moveFantasmas(int direcao){
-    if (direcao == 1){
-        for(int i=0; i<num_fantasmas-1; i++){
-            int x = fantasmas[i].x;
-            int y = fantasmas[i].y;
-
-            if (eh_parede_xy(x, y)) return;
-
-            maze[x][y] = VAZIO;
-            maze[x+1][y] = FANTASMA;
-        }
-    
-    }
-    if (direcao == 0){
-        for(int i=0; i<num_fantasmas-1; i++){
-            int x = fantasmas[i].x;
-            int y = fantasmas[i].y;
-            
-            if (eh_parede_xy(x, y)) return;
-
-            maze[x][y] = VAZIO;
-            maze[x-1][y] = FANTASMA;
-        }
-    }
-}
