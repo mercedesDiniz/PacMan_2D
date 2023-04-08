@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <GL/glut.h>
 #include <GLFW/glfw3.h>
+#include <SOIL/SOIL.h>
 #include <math.h>
 #include "pacman.h"
 
@@ -74,8 +75,8 @@ int main(int argc, char** argv){
         glPushMatrix();
         desenhaLabirinto();
         desenhaFoodPill();
-        desenhaPowerPill();
         desenhaFantasma();
+        desenhaPowerPill();
         desenhaPacman();
         glPopMatrix();
         // Swap buffers and poll events
@@ -257,75 +258,33 @@ void desenhaFantasma() {
                 int y = ((MAZE_HEIGHT - i - 1) * (SCREEN_HEIGHT / MAZE_HEIGHT))+20;
                 int cellWidth = 10;
                 int cellHeight = 10;
-                float x1 = x + (cellWidth / 2) - 12;
-                float y1 = y + (cellHeight / 2) - 12;
-                float x2 = x + (cellWidth / 2) + 12;
-                float y2 = y + (cellHeight / 2) + 12;
+                float x1 = x + (cellWidth / 2) - 24;
+                float y1 = y + (cellHeight / 2) - 24;
+                float x2 = x + (cellWidth / 2) + 24;
+                float y2 = y + (cellHeight / 2) + 24;
 
-                // Define as coordenadas do centro do círculo
-                float xc = x + (cellWidth / 2);
-                float yc = y + (cellHeight / 2) + 12;
+                // Carrega a textura
+                GLuint textureID = SOIL_load_OGL_texture("texturas/fantasma1.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
 
-                // Define o raio do círculo
-                float r = 12.0;
+                // Ativa a textura
+                glEnable(GL_TEXTURE_2D);
+                glBindTexture(GL_TEXTURE_2D, textureID);
 
-                // Define o número de segmentos do círculo
-                int n = 100;
-
-                // Desenha o quadrado
+                // Desenha o quadrado com a textura
                 glBegin(GL_QUADS);
-                glColor3f(0.4, 0.4, 0.4); // Cor branca
+                glTexCoord2f(0, 0);
                 glVertex2f(x1, y1);
+                glTexCoord2f(0, 1);
                 glVertex2f(x1, y2);
+                glTexCoord2f(1, 1);
                 glVertex2f(x2, y2);
+                glTexCoord2f(1, 0);
                 glVertex2f(x2, y1);
                 glEnd();
 
-                // Desenha o círculo
-                glBegin(GL_POLYGON);
-                glColor3f(0.4, 0.4, 0.4); // Cor vermelha
-                for (int i = 0; i < n; i++) {
-                    float theta = 2.0 * M_PI * i / n;
-                    float x = xc + r * cos(theta);
-                    float y = yc + r * sin(theta);
-                    glVertex2f(x, y);
-                }
-                glEnd();
-
-                // Desenha o olho esquerdo do fantasma
-                glColor3f(1.0, 0.0, 0.0); // Branco
-                glBegin(GL_POLYGON);
-                glVertex2f(x - cellWidth / 4, y + cellWidth / 2+12);
-                glVertex2f(x + cellWidth / 4, y + cellWidth / 2+12);
-                glVertex2f(x + cellWidth / 4, y + cellWidth / 4+12);
-                glVertex2f(x - cellWidth / 4, y + cellWidth / 4+12);
-                glEnd();
-
-                // Desenha o olho direito do fantasma
-                glColor3f(1.0, 0.0, 0.0); // Branco
-                glBegin(GL_POLYGON);
-                glVertex2f(x - cellWidth / 4 + 10, y + cellWidth / 2 + 12);
-                glVertex2f(x + cellWidth / 4 + 10, y + cellWidth / 2 + 12);
-                glVertex2f(x + cellWidth / 4 + 10, y + cellWidth / 4 + 12);
-                glVertex2f(x - cellWidth / 4 + 10, y + cellWidth / 4 + 12);
-                glEnd();
-
-                // Desenha a saia do fantasma
-                glColor3f(0.0, 0.0, 0.0); // Branco
-                glBegin(GL_POLYGON);
-                glVertex2f(x - cellWidth / 4 + 10, y + cellWidth / 2 - 9);
-                glVertex2f(x + cellWidth / 4 + 10, y + cellWidth / 2 - 9);
-                glVertex2f(x + cellWidth / 4 + 10, y + cellWidth / 4 - 9);
-                glVertex2f(x - cellWidth / 4 + 10, y + cellWidth / 4 - 9);
-                glEnd();
-                // Desenha a saia do fantasma
-                glColor3f(0.0, 0.0, 0.0); // Branco
-                glBegin(GL_POLYGON);
-                glVertex2f(x - cellWidth / 4 , y + cellWidth / 2 - 9);
-                glVertex2f(x + cellWidth / 4 , y + cellWidth / 2 - 9);
-                glVertex2f(x + cellWidth / 4 , y + cellWidth / 4 - 9);
-                glVertex2f(x - cellWidth / 4 , y + cellWidth / 4 - 9);
-                glEnd();
+                // Desativa a textura
+                glDisable(GL_BLEND);
+                glDisable(GL_TEXTURE_2D);
             }
         }
     }
