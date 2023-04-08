@@ -6,89 +6,90 @@
 //#define _USE_MATH_DEFINES           //# Para rodar no Visual Studio descomente essa linha
 #include <stdio.h>
 #include <math.h>
-#include <unistd.h> // para a função sleep()
+#include <unistd.h> 
 #include <GL/glut.h>
 #include <GLFW/glfw3.h>
 #include <SOIL/SOIL.h>
 #include "pacman.h"
 
-// Declarando Variaveis Globais
-POSICAO pacman; // posição atual do pacman
+/************************************************************************************************************************************/
+/*******                                                 VARIAVEIS GLOBAIS                                                    *******/
+/************************************************************************************************************************************/
+bool gFlag_habilita_logs = true;
 
+POSICAO pacman; // posição atual do pacman
 int haveFoodPill = 0;  // qtd de pilulas de comida
 int havePowerPill = 0; // qtd de pilulas de poder
+
 char ultima_tecla_precionada;
 char tecla_precionada = DIREITA;
 
 bool game_over = false;
 
-
-// MAIN
+/************************************************************************************************************************************/
+/*******                                                      MAIN                                                            *******/
+/************************************************************************************************************************************/
 int main(int argc, char** argv){
-    glutInit(&argc, argv); // Inicializa a biblioteca FreeGLUT
+    // Inicializa a biblioteca FreeGLUT
+    glutInit(&argc, argv); 
     GLFWwindow* window;
-    // Initialize GLFW
-    if (!glfwInit()) {
-        return -1;
-    }
+
+    // Inicializa o GLFW
+    if (!glfwInit()) return -1;
+
     glutInitDisplayMode(GLUT_DOUBLE);
     glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
+    // Atribuindo a posição inicial do Pacman
     pacman.x = SCREEN_WIDTH/4; // coordenada da horizontal
     pacman.y = SCREEN_HEIGHT/4; // coordenada da vertical
     pacman.angle = 0.0;
     pacman.scale = 1.0;
 
-    printf("[LOG] main: pacman x: %d\n", int(pacman.x));
-    printf("[LOG] main: pacman y: %d\n", int(pacman.y));
+    //if(gFlag_habilita_logs) printf("[LOG] main(): pacman (x, y): (%d,%d )\n", int(pacman.x), int(pacman.y));
 
-    // Create a windowed mode window and its OpenGL context
+    // Cria uma janela em modo janela e seu contexto OpenGL
     window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "PacMan", NULL, NULL);
     if (!window) {
         glfwTerminate();
         return -1;
     }
 
-    // Make the window's context current
+    // Torna o contexto da janela atual
     glfwMakeContextCurrent(window);
 
-    // Set the projection matrix
+    // Define a matriz de projeção
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT);
 
-    // Set the modelview matrix
+    // Define a matriz modelview
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
     glfwSetKeyCallback(window, keyboard);
 
-    // Main loop
+    // MAIN LOOP
     while (!glfwWindowShouldClose(window)) {
-        //printf("[LOG] Main loop\n");
+        if(gFlag_habilita_logs) printf("[LOG] Main loop\n");
 
-        // Clear the screen
+        // Limpa a tela
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Draw the maze and Pacman
+        // Desenha os elementos no mapa e o Pacman
         glPushMatrix();
         desenhaLabirinto();
         desenhaFoodPill();
         desenhaFantasma();
         desenhaPowerPill();
-        morreu();
+        morreu(); // Verrifica se o Pacman "moreu"
         desenhaPacman();
         glPopMatrix();
-        // Swap buffers and poll events
+
+        // Troca buffers e eventos de votação
         glfwSwapBuffers(window);
         glfwPollEvents();
-
-        // if (game_over){
-        //     desenhaGameOver();
-        //     break;
-        // }
-
     }
 
     // Terminate GLFW
@@ -96,182 +97,159 @@ int main(int argc, char** argv){
     return 0; 
 }
 
-// FUCTIONS:
+/*************************************************************************************************************************************
+*******                                                 ESCOPO DAS FUNÇÕES                                                     *******
+*************************************************************************************************************************************/
 
-// Função tratar as entradas no teclado
+// Função para tratar as entradas no teclado
 void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    //printf("[LOG] keyboard()\n");
-
+    // Fecha a janela quando o "ESC" é precionado
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) glfwSetWindowShouldClose(window, GLFW_TRUE);
     
-    if(!(game_over)) {
+    if(!(game_over)){
         POSICAO nova_posicao;
+        // Trata os comandos para movimentar o Pacmen:
         switch (key) {
-        case ESQUERDA:
-            tecla_precionada = ESQUERDA;
+            case ESQUERDA:
+                tecla_precionada = ESQUERDA;
 
-            // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-            nova_posicao = { static_cast<float>(pacman.x - PASSO - 9), static_cast<float>(pacman.y) };
-            if (!eh_parede(nova_posicao)) {
-                pacman.x -= PASSO;
-                if (ultima_tecla_precionada != tecla_precionada) {
-                    pacman.angle = 0.0;
-                    pacman.angle -= 180.0;
+                // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
+                nova_posicao = { static_cast<float>(pacman.x - PASSO - 9), static_cast<float>(pacman.y) };
+                if (!eh_parede(nova_posicao)) {
+                    pacman.x -= PASSO;
+                    if (ultima_tecla_precionada != tecla_precionada) {
+                        pacman.angle = 0.0;
+                        pacman.angle -= 180.0;
+                    }
                 }
-            }
-            eh_FoodPill(nova_posicao);
-            eh_PowerPill(nova_posicao);
-            if (eh_fantasma(nova_posicao)){
-                if (havePowerPill){
-                printf(">> MATA FANTASMA << ");
-                maze[19 - (int)(nova_posicao.y/TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
-                havePowerPill--;
-                }else{
-                printf(">> GAMER OVER << ");
-                game_over = true;
-                }
-            }
+                
+                // Verifica se na nova posição para onde o Pacman vai tem algo para comer
+                eh_FoodPill(nova_posicao);
+                eh_PowerPill(nova_posicao);
 
+                // Verifica se na nova posição para onde o Pacman vai tem um fantasma
+                if (eh_fantasma(nova_posicao)){
+                    // Verifica se o Pacman tem a power pill para mata o fantasma
+                    if (havePowerPill){
+                    if(gFlag_habilita_logs) printf(">> MATA FANTASMA << \n");
+                        maze[19 - (int)(nova_posicao.y/TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
+                        havePowerPill--;
+                    }else{
+                        if(gFlag_habilita_logs) printf(">> GAMER OVER << \n");
+                        game_over = true;
+                    }
+                }
+                break;
 
-            break;
+            case DIREITA:
+                tecla_precionada = DIREITA;
 
-        case DIREITA:
-            tecla_precionada = DIREITA;
+                // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
+                nova_posicao = { static_cast<float>(pacman.x + PASSO + 9), static_cast<float>(pacman.y) };
+                if (!eh_parede(nova_posicao)) {
+                    pacman.x += PASSO;
+                    if (ultima_tecla_precionada != tecla_precionada) {
+                        pacman.angle = 0.0;
+                        pacman.angle += 360.0;
+                    }
+                }
 
-            // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-            nova_posicao = { static_cast<float>(pacman.x + PASSO + 9), static_cast<float>(pacman.y) };
-            if (!eh_parede(nova_posicao)) {
-                pacman.x += PASSO;
-                if (ultima_tecla_precionada != tecla_precionada) {
-                    pacman.angle = 0.0;
-                    pacman.angle += 360.0;
-                }
-            }
-            eh_FoodPill(nova_posicao);
-            eh_PowerPill(nova_posicao);
-            if (eh_fantasma(nova_posicao)) {
-                if (havePowerPill) {
-                    printf(">> MATA FANTASMA << ");
-                    maze[19 - (int)(nova_posicao.y / TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
-                    havePowerPill--;
-                }
-                else {
-                    printf(">> GAMER OVER << ");
-                    game_over = true;
-                }
-            }
-            break;
+                // Verifica se na nova posição para onde o Pacman vai tem algo para comer
+                eh_FoodPill(nova_posicao);
+                eh_PowerPill(nova_posicao);
 
-        case CIMA:
-            tecla_precionada = CIMA;
+                // Verifica se na nova posição para onde o Pacman vai tem um fantasma
+                if (eh_fantasma(nova_posicao)) {
+                    // Verifica se o Pacman tem a power pill para mata o fantasma
+                    if (havePowerPill) {
+                        if(gFlag_habilita_logs) printf(">> MATA FANTASMA << \n");
+                        maze[19 - (int)(nova_posicao.y / TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
+                        havePowerPill--;
+                    }
+                    else {
+                        if(gFlag_habilita_logs) printf(">> GAMER OVER << \n");
+                        game_over = true;
+                    }
+                }
+                break;
 
-            // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-            nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y + PASSO + 9) };
-            if (!eh_parede(nova_posicao)) {
-                pacman.y += PASSO;
-                if (ultima_tecla_precionada != tecla_precionada) {
-                    pacman.angle = 0.0;
-                    pacman.angle += 90.0;
-                }
-            }
-            eh_FoodPill(nova_posicao);
-            eh_PowerPill(nova_posicao);
-            if (eh_fantasma(nova_posicao)) {
-                if (havePowerPill) {
-                    printf(">> MATA FANTASMA << ");
-                    maze[19 - (int)(nova_posicao.y / TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
-                    havePowerPill--;
-                }
-                else {
-                    printf(">> GAMER OVER << ");
-                    game_over = true;
-                }
-            }
-            break;
+            case CIMA:
+                tecla_precionada = CIMA;
 
-        case BAIXO:
-            tecla_precionada = BAIXO;
+                // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
+                nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y + PASSO + 9) };
+                if (!eh_parede(nova_posicao)) {
+                    pacman.y += PASSO;
+                    if (ultima_tecla_precionada != tecla_precionada) {
+                        pacman.angle = 0.0;
+                        pacman.angle += 90.0;
+                    }
+                }
+                
+                // Verifica se na nova posição para onde o Pacman vai tem algo para comer
+                eh_FoodPill(nova_posicao);
+                eh_PowerPill(nova_posicao);
 
-            // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
-            nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y - PASSO - 9) };
-            if (!eh_parede(nova_posicao)) {
-                pacman.y -= PASSO;
-                if (ultima_tecla_precionada != tecla_precionada) {
-                    pacman.angle = 0.0;
-                    pacman.angle -= 90.0;
+                // Verifica se na nova posição para onde o Pacman vai tem um fantasma
+                if (eh_fantasma(nova_posicao)) {
+                    // Verifica se o Pacman tem a power pill para mata o fantasma
+                    if (havePowerPill) {
+                        if(gFlag_habilita_logs) printf(">> MATA FANTASMA << \n");
+                        maze[19 - (int)(nova_posicao.y / TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
+                        havePowerPill--;
+                    }
+                    else {
+                        if(gFlag_habilita_logs) printf(">> GAMER OVER << \n");
+                        game_over = true;
+                    }
                 }
-            }
-            eh_FoodPill(nova_posicao);
-            eh_PowerPill(nova_posicao);
-            if (eh_fantasma(nova_posicao)) {
-                if (havePowerPill) {
-                    printf(">> MATA FANTASMA << ");
-                    maze[19 - (int)(nova_posicao.y / TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
-                    havePowerPill--;
+                break;
+
+            case BAIXO:
+                tecla_precionada = BAIXO;
+
+                // Verifica se a nova posição para onde o Pac-Man quer ir é uma parede
+                nova_posicao = { static_cast<float>(pacman.x), static_cast<float>(pacman.y - PASSO - 9) };
+                if (!eh_parede(nova_posicao)) {
+                    pacman.y -= PASSO;
+                    if (ultima_tecla_precionada != tecla_precionada) {
+                        pacman.angle = 0.0;
+                        pacman.angle -= 90.0;
+                    }
                 }
-                else {
-                    printf(">> GAMER OVER << ");
-                    game_over = true;
+
+                // Verifica se na nova posição para onde o Pacman vai tem algo para comer
+                eh_FoodPill(nova_posicao);
+                eh_PowerPill(nova_posicao);
+
+                // Verifica se na nova posição para onde o Pacman vai tem um fantasma
+                if (eh_fantasma(nova_posicao)) {
+                    // Verifica se o Pacman tem a power pill para mata o fantasma
+                    if (havePowerPill) {
+                        if(gFlag_habilita_logs) printf(">> MATA FANTASMA << \n");
+                        maze[19 - (int)(nova_posicao.y / TILE_SIZE)][(int)(nova_posicao.x / TILE_SIZE)] = VAZIO;
+                        havePowerPill--;
+                    }
+                    else {
+                        if(gFlag_habilita_logs) printf(">> GAMER OVER << \n");
+                        game_over = true;
+                    }
                 }
-            }
-            break;
+                break;
         }
 
     }
+
     ultima_tecla_precionada = tecla_precionada;
 
     // atualiza a tela
     glfwSwapBuffers(window);
 }
 
-// Função para desenha a tela de "Game Over"
-// void desenhaGameOver() {
-//     // Carrega a textura
-//     GLuint textureID = SOIL_load_OGL_texture("texturas/gameover.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
-
-//     // Ativa a textura
-//     glEnable(GL_TEXTURE_2D);
-//     glBindTexture(GL_TEXTURE_2D, textureID);
-
-//     // Desabilita o teste de profundidade
-//     glDisable(GL_DEPTH_TEST);
-
-//     // Habilita o blending
-//     glEnable(GL_BLEND);
-//     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    
-
-//     // Define as coordenadas do quadrado que a textura será desenhada
-//     int x = 0;
-//     int y = 0;
-//     int w = SCREEN_WIDTH;
-//     int h = SCREEN_HEIGHT;
-
-//     // Desenha o quadrado com a textura
-//     glBegin(GL_QUADS);
-//     glTexCoord2f(0, 0);
-//     glVertex2f(x, y);
-//     glTexCoord2f(0, 1);
-//     glVertex2f(x, y + h);
-//     glTexCoord2f(1, 1);
-//     glVertex2f(x + w, y + h);
-//     glTexCoord2f(1, 0);
-//     glVertex2f(x + w, y);
-//     glEnd();
-
-//     // Desabilita a textura e o blending
-//     glDisable(GL_BLEND);
-//     glDisable(GL_TEXTURE_2D);
-    
-
-//     // Reabilita o teste de profundidade
-//     glEnable(GL_DEPTH_TEST);
-// }
-
 // Função para desenha o pacman
 void desenhaPacman(){
-    //printf("[LOG] desenha_pacman()\n");
+    if(gFlag_habilita_logs) printf("[LOG] desenha_pacman()\n");
+
     // Desenha o avatar do Pacman
     glTranslatef(pacman.x, pacman.y, 0.0);
     glPushMatrix();
@@ -310,6 +288,8 @@ void desenhaPacman(){
 
 // Função para desenha os Fantasmas
 void desenhaFantasma() {
+    if(gFlag_habilita_logs) printf("[LOG] desenhaFantasma()\n");
+
     for (int i = 0; i < MAZE_HEIGHT; i++) {
         for (int j = 0; j < MAZE_WIDTH; j++) {
             if (maze[i][j] == FANTASMA) {
@@ -350,14 +330,16 @@ void desenhaFantasma() {
     }
 }
 
+// Função para verificar se o Pacman está "vivo", ou seja, se o jogo ja acabou
 void morreu(){
     if(game_over){
+        // Se o pacman "morreu", ele escolhe até sumir
         if (pacman.scale>0.0 ) {
             pacman.scale -= 0.1;
             glPushMatrix();
             desenhaPacman();
             glPopMatrix();
-            printf("[LOG] morreu: escala = %f\n",pacman.scale);
+            if(gFlag_habilita_logs) printf("[LOG] morreu(): escala = %f\n",pacman.scale);
             sleep(0.75); // pausa o programa por 1 segundo
         }
     }
@@ -365,7 +347,8 @@ void morreu(){
 
 // Função para desenha o labirinto
 void desenhaLabirinto() {
-    //printf("[LOG] desenhaLabirinto()\n");
+    if(gFlag_habilita_logs) printf("[LOG] desenhaLabirinto()\n");
+
     glLineWidth(2.0);
     glColor3f(0.0, 0.0, 1.0); // azul
     glBegin(GL_LINES);
@@ -378,19 +361,19 @@ void desenhaLabirinto() {
             int cellHeight = SCREEN_HEIGHT / MAZE_HEIGHT;
 
             if (maze[i][j] == PAREDE) {
-                // draw top line
+                // desenha a linha superior
                 glVertex2f(x, y + cellHeight);
                 glVertex2f(x + cellWidth, y + cellHeight);
 
-                // draw left line
+                // desenha a linha esquerda
                 glVertex2f(x, y);
                 glVertex2f(x, y + cellHeight);
 
-                // draw bottom line
+                // desenha a linha de baixo
                 glVertex2f(x, y);
                 glVertex2f(x + cellWidth, y);
 
-                // draw right line
+                // desenha linha direita
                 glVertex2f(x + cellWidth, y);
                 glVertex2f(x + cellWidth, y + cellHeight);
             }
@@ -400,9 +383,9 @@ void desenhaLabirinto() {
     glEnd();
 }
 
-// Função para desenha as pirulas de comida
+// Função para desenha as pílulas de comida
 void desenhaFoodPill() {
-    //printf("[LOG] desenhaLabirinto()\n");
+    if(gFlag_habilita_logs) printf("[LOG] desenhaFoodPill()\n");
     glLineWidth(2.0);
     glColor3f(1.0, 1.0, 1.0); // branco
     glBegin(GL_QUADS);
@@ -413,23 +396,23 @@ void desenhaFoodPill() {
             int y = ((MAZE_HEIGHT - i - 1) * (SCREEN_HEIGHT / MAZE_HEIGHT))+20;
             int cellWidth = 10;
             int cellHeight = 10;
-            //printf("[LOG] desenhaFoodPill: x:%d/\n", x);
-            //printf("[LOG] desenhaFoodPill: y:%d/\n", y);
+
+            if(gFlag_habilita_logs) printf("[LOG] desenhaFoodPill(): (x, y): (%d,%d)\n", x, y);
 
             if (maze[i][j] == FOOD_PILL) {
-                // draw top line
+                // desenha a linha superior
                 glVertex2f(x, y + cellHeight);
                 glVertex2f(x + cellWidth, y + cellHeight);
 
-                // draw left line
+                // desenha a linha esquerda
                 glVertex2f(x, y);
                 glVertex2f(x, y + cellHeight);
 
-                // draw bottom line
+                // desenha a linha inferior
                 glVertex2f(x, y);
                 glVertex2f(x + cellWidth, y);
 
-                // draw right line
+                // desenha a linha direita
                 glVertex2f(x + cellWidth, y);
                 glVertex2f(x + cellWidth, y + cellHeight);
             }
@@ -439,9 +422,10 @@ void desenhaFoodPill() {
     glEnd();
 }
 
-// Função para desenha as pirulas de poder
+// Função para desenha as pílulas de poder
+
 void desenhaPowerPill() {
-    //printf("[LOG] desenhaLabirinto()\n");
+    if(gFlag_habilita_logs) printf("[LOG] desenhaPowerPill()\n");
     glLineWidth(2.0);
     glColor3f(1.0, 0.0, 0.0); // vermelho
     glBegin(GL_QUADS);
@@ -452,23 +436,23 @@ void desenhaPowerPill() {
             int y = ((MAZE_HEIGHT - i - 1) * (SCREEN_HEIGHT / MAZE_HEIGHT))+20;
             int cellWidth = 10;
             int cellHeight = 10;
-            //printf("[LOG] desenhaFoodPill: x:%d/\n", x);
-            //printf("[LOG] desenhaFoodPill: y:%d/\n", y);
+
+            if(gFlag_habilita_logs) printf("[LOG] desenhaPowerPill(): (x, y): (%d,%d)\n", x, y);
 
             if (maze[i][j] == POWER_PILL) {
-                // draw top line
+                // desenha a linha superior
                 glVertex2f(x, y + cellHeight);
                 glVertex2f(x + cellWidth, y + cellHeight);
 
-                // draw left line
+                // desenha a linha esquerda
                 glVertex2f(x, y);
                 glVertex2f(x, y + cellHeight);
 
-                // draw bottom line
+                // desenha a linha inferior
                 glVertex2f(x, y);
                 glVertex2f(x + cellWidth, y);
 
-                // draw right line
+                // desenha a linha direita
                 glVertex2f(x + cellWidth, y);
                 glVertex2f(x + cellWidth, y + cellHeight);
             }
@@ -478,25 +462,22 @@ void desenhaPowerPill() {
     glEnd();
 }
 
-// Função para verificar se o Pac-Man colidiu com uma parede
+// Função para verificar se em determinada posição existe uma parede
 bool eh_parede(POSICAO p){
     // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
     int x = (int) (p.x / TILE_SIZE);
     int y = (int) (p.y / TILE_SIZE);
     y = 19 - y;
-    printf("x: %d\n",x);
-    printf("y: %d\n" ,y);
-    printf("\n");
 
     // Verificar se as coordenadas correspondem a uma parede
     if (maze[y][x] == PAREDE) {
-        printf("colidiu\n");
+        if(gFlag_habilita_logs) printf("[LOG] eh_parede(): colidiu com\n");
         return true;
     }
     return false;
 }
 
-// Função para verificar se o Pac-Man encontrou comida
+// Função para verificar se em determinada posição existe comida
 bool eh_FoodPill(POSICAO p) {
     // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
     int x = (int)(p.x / TILE_SIZE);
@@ -507,36 +488,38 @@ bool eh_FoodPill(POSICAO p) {
     if (maze[y][x] == FOOD_PILL) {
         haveFoodPill += 1;
         maze[y][x] = VAZIO;
-        printf("[LOG] Main: FoodPill: %d\n", haveFoodPill);
+        if(gFlag_habilita_logs) printf("[LOG] eh_FoodPill(): achou comida: %d\n", haveFoodPill);
         return true;
     }
     return false;
 }
 
-// Função para verificar se o Pac-Man encontrou uma pirula de poder
+// Função para verificar se em determinada posição existe uma pirula de poder
 bool eh_PowerPill(POSICAO p){
     // Converter as coordenadas do Pac-Man para as coordenadas do labirinto
     int x = (int) (p.x / TILE_SIZE);
     int y = (int) (p.y / TILE_SIZE);
     y = 19 - y;
+
     // Verificar se as coordenadas correspondem a uma pirula de poder
     if(maze[y][x] == POWER_PILL) {
         havePowerPill += 1;
         maze[y][x] = VAZIO;
-        printf("[LOG] Main: PowerPill: %d\n", havePowerPill);
+        if(gFlag_habilita_logs) printf("[LOG] eh_PowerPill(): achou power pill: %d\n", havePowerPill);
         return true;
     }
     return false;
 }
 
-// Função para verificar se o Pac-Man colidiu com uma fantasma
+// Função para verificar se em determinada posição existe um fantasma
 bool eh_fantasma(POSICAO p){
     /// Converter as coordenadas do Pac-Man para as coordenadas do labirinto
     int x = (int) (p.x / TILE_SIZE);
     int y = (int) ((p.y) / TILE_SIZE);
     y = 19 - y;
+
     // Verificar se as coordenadas correspondem a uma pirula de poder
     if(maze[y][x] == FANTASMA) return true;
+    if(gFlag_habilita_logs) printf("[LOG] eh_fantasma(): BOO!\n");
     return false;
 }
-
