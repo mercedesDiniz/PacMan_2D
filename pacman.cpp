@@ -19,6 +19,8 @@ int havePowerPill = 0; // qtd de pilulas de poder
 char ultima_tecla_precionada;
 char tecla_precionada = DIREITA;
 
+bool game_over = false;
+
 
 // MAIN
 int main(int argc, char** argv){
@@ -80,6 +82,11 @@ int main(int argc, char** argv){
         glfwSwapBuffers(window);
         glfwPollEvents();
 
+        // if (game_over){
+        //     desenhaGameOver();
+        //     break;
+        // }
+
     }
 
     // Terminate GLFW
@@ -118,6 +125,7 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
               havePowerPill--;
             }else{
               printf(">> GAMER OVER << ");
+              game_over = true;
             }
         }
 
@@ -146,6 +154,7 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
             }
             else {
                 printf(">> GAMER OVER << ");
+                game_over = true;
             }
         }
         break;
@@ -172,6 +181,7 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
             }
             else {
                 printf(">> GAMER OVER << ");
+                game_over = true;
             }
         }
         break;
@@ -198,6 +208,7 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
             }
             else {
                 printf(">> GAMER OVER << ");
+                game_over = true;
             }
         }
         break;
@@ -208,7 +219,52 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
     glfwSwapBuffers(window);
 }
 
-// Função para desenhar o pacman
+// Função para desenha a tela de "Game Over"
+// void desenhaGameOver() {
+//     // Carrega a textura
+//     GLuint textureID = SOIL_load_OGL_texture("texturas/gameover.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
+
+//     // Ativa a textura
+//     glEnable(GL_TEXTURE_2D);
+//     glBindTexture(GL_TEXTURE_2D, textureID);
+
+//     // Desabilita o teste de profundidade
+//     glDisable(GL_DEPTH_TEST);
+
+//     // Habilita o blending
+//     glEnable(GL_BLEND);
+//     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    
+
+//     // Define as coordenadas do quadrado que a textura será desenhada
+//     int x = 0;
+//     int y = 0;
+//     int w = SCREEN_WIDTH;
+//     int h = SCREEN_HEIGHT;
+
+//     // Desenha o quadrado com a textura
+//     glBegin(GL_QUADS);
+//     glTexCoord2f(0, 0);
+//     glVertex2f(x, y);
+//     glTexCoord2f(0, 1);
+//     glVertex2f(x, y + h);
+//     glTexCoord2f(1, 1);
+//     glVertex2f(x + w, y + h);
+//     glTexCoord2f(1, 0);
+//     glVertex2f(x + w, y);
+//     glEnd();
+
+//     // Desabilita a textura e o blending
+//     glDisable(GL_BLEND);
+//     glDisable(GL_TEXTURE_2D);
+    
+
+//     // Reabilita o teste de profundidade
+//     glEnable(GL_DEPTH_TEST);
+// }
+
+// Função para desenha o pacman
 void desenhaPacman(){
     //printf("[LOG] desenha_pacman()\n");
     // Desenha o avatar do Pacman
@@ -246,6 +302,7 @@ void desenhaPacman(){
     glPopMatrix();
 }
 
+// Função para desenha os Fantasmas
 void desenhaFantasma() {
     for (int i = 0; i < MAZE_HEIGHT; i++) {
         for (int j = 0; j < MAZE_WIDTH; j++) {
@@ -287,7 +344,7 @@ void desenhaFantasma() {
     }
 }
 
-// Função para desenhar o labirinto
+// Função para desenha o labirinto
 void desenhaLabirinto() {
     //printf("[LOG] desenhaLabirinto()\n");
     glLineWidth(2.0);
@@ -324,6 +381,7 @@ void desenhaLabirinto() {
     glEnd();
 }
 
+// Função para desenha as pirulas de comida
 void desenhaFoodPill() {
     //printf("[LOG] desenhaLabirinto()\n");
     glLineWidth(2.0);
@@ -362,6 +420,7 @@ void desenhaFoodPill() {
     glEnd();
 }
 
+// Função para desenha as pirulas de poder
 void desenhaPowerPill() {
     //printf("[LOG] desenhaLabirinto()\n");
     glLineWidth(2.0);
@@ -461,3 +520,4 @@ bool eh_fantasma(POSICAO p){
     if(maze[y][x] == FANTASMA) return true;
     return false;
 }
+

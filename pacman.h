@@ -77,6 +77,7 @@ void desenhaLabirinto();
 void desenhaFoodPill();
 void desenhaPowerPill();
 void desenhaFantasma();
+// void desenhaGameOver();
 // void keyboard(unsigned char key, int x, int y);
 void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
 
